@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS Company(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    symbol VARCHAR(8) NOT NULL,
+    name VARCHAR(128) NOT NULL,
+    exchange VARCHAR(8) NOT NULL,
+    currency VARCHAR(8) NOT NULL,
+    country VARCHAR(16) NOT NULL,
+    sector VARCHAR(24) NOT NULL,
+    UNIQUE(symbol)
+);

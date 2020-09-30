@@ -1,0 +1,5 @@
+DAL.GeneralMapper
+    + All the curd methods
+    + Create a way to save initialize the sessionFactory
+
+Complete the DAL.CompanyMapper only for CompanyOverview
