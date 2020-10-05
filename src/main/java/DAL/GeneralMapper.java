@@ -6,8 +6,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
 import javax.persistence.NonUniqueResultException;
-import javax.transaction.TransactionScoped;
-import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 

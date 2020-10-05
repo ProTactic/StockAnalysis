@@ -1,8 +1,13 @@
 package System;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class AlphavantageRecordBuilder implements RecordBuilder {
 
@@ -23,5 +28,31 @@ public class AlphavantageRecordBuilder implements RecordBuilder {
     @Override
     public CompanyOverviewRecord buildCompanyOverview(String data) {
         return gson.fromJson(data, CompanyOverviewRecord.class);
+    }
+
+    public List<IncomeStatementRecord> buildIncomeStatement(String data) {
+        Gson gson = new GsonBuilder().create();
+        IncomeStatementRecord record = new IncomeStatementRecord();
+        List<IncomeStatementRecord> records = new ArrayList<>();
+        JsonObject json = gson.fromJson(data, JsonObject.class);
+
+        record.setSymbol(json.get("symbol").getAsJsonPrimitive().getAsString());
+        JsonArray annualReports = json.getAsJsonArray("annualReports");
+
+        for ( JsonElement statement: annualReports ) {
+            record = gson.fromJson(statement, IncomeStatementRecord.class);
+
+            Date statementDate = null;
+            try {
+                statementDate = new SimpleDateFormat("yyyy-MM-dd")
+                                        .parse(statement.getAsJsonObject().get("fiscalDateEnding")
+                                                .getAsJsonPrimitive().getAsString());
+            } catch (ParseException ignored) { }
+
+            record.setDate(statementDate);
+            records.add(record);
+        }
+
+        return records;
     }
 }

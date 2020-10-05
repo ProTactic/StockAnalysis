@@ -1,5 +1,7 @@
 package System;
 
+import java.util.List;
+
 public abstract class RemoteDataHandler {
 
     protected RecordBuilder recordBuilder;
@@ -9,6 +11,11 @@ public abstract class RemoteDataHandler {
     }
 
     /**
+     * Set the recordBuilder to the appropriate class
+     */
+    protected abstract void createRecordBuilder();
+
+    /**
      * Get the overview data (name, industry etc) of the company
      * represented by the ticker symbol
      * @param tickerSymbol Ticker symbol of the stock
@@ -16,8 +23,6 @@ public abstract class RemoteDataHandler {
      */
     public abstract CompanyOverviewRecord companyOverview(String tickerSymbol);
 
-    /**
-     * Set the recordBuilder to the appropriate class
-     */
-    protected abstract void createRecordBuilder();
+    public abstract List<IncomeStatementRecord> incomeStatement(String tickerSymbol);
+
 }

@@ -30,7 +30,8 @@ public class Main {
         //CompanyOverviewRecord record = mapper.findById(1L);
 
         SystemManager systemManager = new SystemManager();
-        CompanyOverviewRecord record = systemManager.getCompanyOverview("IBM");
-        System.out.println(record);
+        //CompanyOverviewRecord record = systemManager.getCompanyOverview("IBM");
+        List<IncomeStatementRecord> records = systemManager.getIncomeStatement("IBM");
+        System.out.println(records);
     }
 }

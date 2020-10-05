@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 public class AlphavantageAPIHandler extends RemoteDataHandler {
 
@@ -34,6 +35,23 @@ public class AlphavantageAPIHandler extends RemoteDataHandler {
         try {
             HttpResponse<String> response = websiteAPI.send(request, HttpResponse.BodyHandlers.ofString());
             return recordBuilder.buildCompanyOverview(response.body());
+        } catch (IOException | InterruptedException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<IncomeStatementRecord> incomeStatement(String tickerSymbol) {
+        RestTemplate restTemplate = new RestTemplate(API_EMPTY_QUERY)
+                .addKeyValue("function", "INCOME_STATEMENT")
+                .addKeyValue("symbol", tickerSymbol)
+                .addKeyValue("apikey", API_KEY);
+
+        HttpRequest request = buildRequest(restTemplate.getRestUrl());
+
+        try {
+            HttpResponse<String> response = websiteAPI.send(request, HttpResponse.BodyHandlers.ofString());
+            return recordBuilder.buildIncomeStatement(response.body());
         } catch (IOException | InterruptedException e) {
             return null;
         }

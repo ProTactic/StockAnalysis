@@ -18,5 +18,29 @@
         <property name = "country" column = "country" type = "string"/>
         <property name = "sector" column = "sector" type = "string"/>
 
+        <!--many to one doc from 2 all are optional
+        URL : https://docs.jboss.org/hibernate/orm/3.3/reference/en-US/html/mapping.html#mapping-declaration-manytoone
+        more info : https://vladmihalcea.com/the-best-way-to-map-a-onetomany-association-with-jpa-and-hibernate/
+            https://docs.jboss.org/hibernate/core/3.6/reference/en-US/html_single/#d0e4865
+        <many-to-one name="propertyName"
+        (1) column="column_name"
+        (2) class="ClassName"
+        (3) cascade="cascade_style"
+        (4) fetch="join|select"
+        (5) update="true|false"
+        (6) insert="true|false"
+        (6) property-ref="propertyNameFromAssociatedClass"
+        (7) access="field|property|ClassName"
+        (8) unique="true|false"
+        (9) not-null="true|false"
+        (10) optimistic-lock="true|false"
+        (11) lazy="proxy|no-proxy|false"
+        (12) not-found="ignore|exception"
+        (13) entity-name="EntityName"
+        (14) formula="arbitrary SQL expression"
+        (15) node="element-name|@attribute-name|element/@attribute|." embed-xml="true|false"
+            index="index_name" unique_key="unique_key_id" foreign-key="foreign_key_name" />
+        -->
+
     </class>
 </hibernate-mapping>

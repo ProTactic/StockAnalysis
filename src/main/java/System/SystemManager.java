@@ -2,6 +2,8 @@ package System;
 
 import DAL.CompanyMapper;
 
+import java.util.List;
+
 public class SystemManager {
 
     private RemoteDataHandler remoteDataHandler;
@@ -21,5 +23,10 @@ public class SystemManager {
         }
         companyMapper.update(record);
         return record;
+    }
+
+    List<IncomeStatementRecord> getIncomeStatement(String symbol){
+        List<IncomeStatementRecord> records = remoteDataHandler.incomeStatement(symbol);
+        return records;
     }
 }
