@@ -1,7 +1,6 @@
 package System;
 
 public class CompanyOverviewRecord extends Record {
-    public Long id;
     public String symbol;
     public String name;
     public String exchange;
@@ -11,22 +10,13 @@ public class CompanyOverviewRecord extends Record {
 
     protected CompanyOverviewRecord() {}
 
-    public CompanyOverviewRecord(Long id, String symbol, String name, String exchange, String currency, String country, String sector) {
-        this.setId(id);
+    public CompanyOverviewRecord(String symbol, String name, String exchange, String currency, String country, String sector) {
         this.setSymbol(symbol);
         this.setName(name);
         this.setExchange(exchange);
         this.setCurrency(currency);
         this.setCountry(country);
         this.setSector(sector);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getSymbol() {

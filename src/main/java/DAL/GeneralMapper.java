@@ -1,10 +1,13 @@
 package DAL;
 
+import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
 import javax.persistence.NonUniqueResultException;
+import javax.transaction.TransactionScoped;
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 
@@ -17,6 +20,7 @@ public abstract class GeneralMapper<T, Id extends Serializable> {
 
     GeneralMapper(Class<T> classType){
         sessionFactory = HibernateUtil.getSessionFactory();
+        openCurrentSession();
         this.classType = classType;
 
     }
@@ -34,25 +38,34 @@ public abstract class GeneralMapper<T, Id extends Serializable> {
     }
 
     public T findById(Id id){
-        openCurrentSession();
-        T data = currentSession.get(classType, id);
-        closeCurrentSession();
-        return data;
+        return currentSession.get(classType, id);
     }
 
     public void save(T entity){
-        openCurrentSession();
+        currentSession.beginTransaction();
         currentSession.save(entity);
-        closeCurrentSession();
+        currentSession.getTransaction().commit();
     }
 
-    /*abstract public void update(T entity);
+    public void update(T entity){
+        currentSession.beginTransaction();
+        currentSession.merge(entity);
+        currentSession.getTransaction().commit();
 
-    abstract public void delete(T entity);
+    }
 
-    abstract public List<T> findAll();
+    public void delete(T entity){
+        currentSession.beginTransaction();
+        currentSession.delete(entity);
+        currentSession.getTransaction().commit();
 
-    abstract public void deleteAll();*/
+    }
+
+    public List<T> findAll(){
+        return currentSession.createQuery("FROM CompanyOverviewRecord", classType).list();
+    }
+
+    /*abstract public void deleteAll();*/
 
     public T getSingleResultOrNull(Query<T> query){
         List<T> results = query.getResultList();

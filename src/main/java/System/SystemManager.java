@@ -12,13 +12,14 @@ public class SystemManager {
     }
 
     CompanyOverviewRecord getCompanyOverview(String symbol){
-        CompanyOverviewRecord record = companyMapper.findBySymbol(symbol);
+        CompanyOverviewRecord record = companyMapper.findById(symbol);
         if(record == null){
             record = remoteDataHandler.companyOverview(symbol);
             if(record != null){
                 companyMapper.save(record);
             }
         }
+        companyMapper.update(record);
         return record;
     }
 }

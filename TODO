@@ -1,5 +1,9 @@
 DAL.GeneralMapper
-    + All the curd methods
     + Create a way to save initialize the sessionFactory
 
-Complete the DAL.CompanyMapper only for CompanyOverview
+Implement the code for all of finance statements:
+    + income statement
+    + balance sheet
+    + cash flow
+
+Design a way to load the API KEY

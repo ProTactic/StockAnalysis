@@ -10,7 +10,7 @@ public class AlphavantageAPIHandler extends RemoteDataHandler {
 
     final String API_EMPTY_QUERY = "https://www.alphavantage.co/query?";
     //TODO set your key
-    final String API_KEY = "Set your key";
+    final String API_KEY = "DHGQ9VIBRHBR51ZW";
 
     private HttpClient websiteAPI;
 
@@ -24,11 +24,12 @@ public class AlphavantageAPIHandler extends RemoteDataHandler {
     }
 
     public CompanyOverviewRecord companyOverview(String tickerSymbol) {
-        String function = "OVERVIEW";
-        String UrlRequest = String.format("%sfunction=%s&symbol=%s&apikey=%s",
-                            API_EMPTY_QUERY, function, tickerSymbol, API_KEY);
+        RestTemplate restTemplate = new RestTemplate(API_EMPTY_QUERY)
+                .addKeyValue("function", "OVERVIEW")
+                .addKeyValue("symbol", tickerSymbol)
+                .addKeyValue("apikey", API_KEY);
 
-        HttpRequest request = buildRequest(UrlRequest);
+        HttpRequest request = buildRequest(restTemplate.getRestUrl());
 
         try {
             HttpResponse<String> response = websiteAPI.send(request, HttpResponse.BodyHandlers.ofString());

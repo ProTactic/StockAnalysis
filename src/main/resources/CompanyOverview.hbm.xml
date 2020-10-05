@@ -10,13 +10,7 @@
             This class contains the company overview details.
         </meta>
 
-        <id name = "id" type = "long" column = "id">
-            <generator class="identity"/>
-        </id>
-
-        <properties name="UKSymbol" unique="true">
-            <property name = "symbol" column = "symbol" type = "string"/>
-        </properties>
+        <id name="symbol" column="symbol" type="string"/>
 
         <property name = "name" column = "name" type = "string"/>
         <property name = "exchange" column = "exchange" type = "string"/>
