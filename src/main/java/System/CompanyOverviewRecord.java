@@ -1,5 +1,11 @@
 package System;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "CompanyOverview")
 public class CompanyOverviewRecord extends Record {
     public String symbol;
     public String name;
@@ -19,6 +25,7 @@ public class CompanyOverviewRecord extends Record {
         this.setSector(sector);
     }
 
+    @Id
     public String getSymbol() {
         return symbol;
     }

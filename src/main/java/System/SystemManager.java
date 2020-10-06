@@ -26,7 +26,13 @@ public class SystemManager {
     }
 
     List<IncomeStatementRecord> getIncomeStatement(String symbol){
-        List<IncomeStatementRecord> records = remoteDataHandler.incomeStatement(symbol);
+        List<IncomeStatementRecord> records = companyMapper.getIncomeStatements(symbol);
+        if(records.isEmpty()){
+           records = remoteDataHandler.incomeStatement(symbol);
+           if(!records.isEmpty()){
+                companyMapper.save(records);
+           }
+        }
         return records;
     }
 }

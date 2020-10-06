@@ -18,6 +18,10 @@
             jdbc:h2:file:~/StockApp/stocks
         </property>
 
+        <property name = "hibernate.jdbc.batch_size">
+            10
+        </property>
+
         <property name = "hibernate.connection.username">
             user
         </property>
@@ -27,15 +31,16 @@
         </property>
 
         <property name="hibernate.show_sql">
-            false
+            true
         </property>
 
         <property name="hibernate.hbm2ddl.auto">
             update
         </property>
 
-        <!-- List of XML mapping files -->
-        <mapping resource = "CompanyOverview.hbm.xml"/>
+        <!-- List of mapping classes -->
+        <mapping class = "System.CompanyOverviewRecord"/>
+        <mapping class = "System.IncomeStatementRecord"/>
 
     </session-factory>
 </hibernate-configuration>

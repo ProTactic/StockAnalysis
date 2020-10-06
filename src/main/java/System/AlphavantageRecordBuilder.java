@@ -11,12 +11,10 @@ import java.util.List;
 
 public class AlphavantageRecordBuilder implements RecordBuilder {
 
-    private final Gson gson;
+    private final SimpleDateFormat dateFormat;
 
     AlphavantageRecordBuilder(){
-        gson = new GsonBuilder()
-            .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
-            .create();
+        dateFormat = new SimpleDateFormat("yyyy-dd-MM");
     }
 
     /**
@@ -27,30 +25,33 @@ public class AlphavantageRecordBuilder implements RecordBuilder {
      */
     @Override
     public CompanyOverviewRecord buildCompanyOverview(String data) {
+        Gson gson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+                .create();
         return gson.fromJson(data, CompanyOverviewRecord.class);
     }
 
     public List<IncomeStatementRecord> buildIncomeStatement(String data) {
         Gson gson = new GsonBuilder().create();
-        IncomeStatementRecord record = new IncomeStatementRecord();
+        IncomeStatementRecord record;
         List<IncomeStatementRecord> records = new ArrayList<>();
         JsonObject json = gson.fromJson(data, JsonObject.class);
+        Date statementDate = null;
+        String symbol;
 
-        record.setSymbol(json.get("symbol").getAsJsonPrimitive().getAsString());
+        symbol = json.get("symbol").getAsJsonPrimitive().getAsString();
         JsonArray annualReports = json.getAsJsonArray("annualReports");
-
         for ( JsonElement statement: annualReports ) {
             record = gson.fromJson(statement, IncomeStatementRecord.class);
+            record.companyOverviewRecord = new CompanyOverviewRecord();
 
-            Date statementDate = null;
+            record.getCompanyOverviewRecord().setSymbol(symbol);
             try {
-                statementDate = new SimpleDateFormat("yyyy-MM-dd")
-                                        .parse(statement.getAsJsonObject().get("fiscalDateEnding")
+                statementDate = dateFormat.parse(statement.getAsJsonObject().get("fiscalDateEnding")
                                                 .getAsJsonPrimitive().getAsString());
+                record.setDate(statementDate);
+                records.add(record);
             } catch (ParseException ignored) { }
-
-            record.setDate(statementDate);
-            records.add(record);
         }
 
         return records;

@@ -1,9 +1,17 @@
 package System;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
-public class IncomeStatementRecord extends Record {
-    public String symbol;
+@Entity
+@Table(name = "IncomeStatement")
+public class IncomeStatementRecord extends Record implements Serializable {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "symbol")
+    public CompanyOverviewRecord companyOverviewRecord;
+    @Id
     public Date date;
     public Long totalRevenue;
     public Long costOfRevenue;
@@ -15,9 +23,9 @@ public class IncomeStatementRecord extends Record {
     public IncomeStatementRecord() {
     }
 
-    public IncomeStatementRecord(String symbol, Date date, Long totalRevenue, Long costOfRevenue,
+    public IncomeStatementRecord(CompanyOverviewRecord record, Date date, Long totalRevenue, Long costOfRevenue,
                                  Long grossProfit, Long totalOperatingExpense, Long operatingIncome, Long netIncome) {
-        this.symbol = symbol;
+        this.companyOverviewRecord = record;
         this.date = date;
         this.totalRevenue = totalRevenue;
         this.costOfRevenue = costOfRevenue;
@@ -27,12 +35,12 @@ public class IncomeStatementRecord extends Record {
         this.netIncome = netIncome;
     }
 
-    public String getSymbol() {
-        return symbol;
+    public CompanyOverviewRecord getCompanyOverviewRecord() {
+        return companyOverviewRecord;
     }
 
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
+    public void setCompanyOverviewRecord(CompanyOverviewRecord companyOverviewRecord) {
+        this.companyOverviewRecord = companyOverviewRecord;
     }
 
     public Date getDate() {

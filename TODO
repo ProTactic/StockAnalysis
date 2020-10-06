@@ -2,8 +2,10 @@ DAL.GeneralMapper
     + Create a way to save initialize the sessionFactory
 
 Implement the code for all of finance statements:
-    + income statement dal
     + balance sheet
     + cash flow
 
 Design a way to load the API KEY
+
+Create a way to connect the code batch size and hibernate configuration batch size
+Optimize cash using the level one cash of hibernate with the batch insert

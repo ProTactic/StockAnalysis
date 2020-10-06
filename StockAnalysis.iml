@@ -14,7 +14,7 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <datasource-mapping>
-          <factory-entry name="StockAnalysis" />
+          <factory-entry name="StockAnalysis" value="64f5af37-963a-4dc6-a024-f5947956549a" />
           <factory-entry name="StockAnalytics" />
         </datasource-mapping>
         <naming-strategy-map />
