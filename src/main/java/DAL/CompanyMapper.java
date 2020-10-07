@@ -1,9 +1,10 @@
 package DAL;
 import System.CompanyOverviewRecord;
 import System.IncomeStatementRecord;
+import System.BalanceSheetRecord;
+import System.CompanyFinancialRecord;
 import org.hibernate.query.Query;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CompanyMapper extends GeneralMapper<CompanyOverviewRecord, String> {
@@ -11,24 +12,24 @@ public class CompanyMapper extends GeneralMapper<CompanyOverviewRecord, String> 
     public CompanyMapper() {
         super(CompanyOverviewRecord.class);
     }
-    
-    public List<IncomeStatementRecord> getIncomeStatements(String symbol){
-        Query<IncomeStatementRecord> query = currentSession.createQuery("FROM IncomeStatementRecord WHERE symbol= :symbol", IncomeStatementRecord.class)
+
+    public <E extends CompanyFinancialRecord> List<E> getFinancialStatement(String symbol, Class<E> classType) {
+        String hql = "FROM " + classType.getSimpleName() + " WHERE symbol=:symbol";
+        Query<E> query = currentSession.createQuery(hql ,classType)
                 .setParameter("symbol", symbol);
         return query.getResultList();
     }
 
-    public void save(List<IncomeStatementRecord> incomeStatementRecords){
+    public <E> void save(List<E> record){
         currentSession.beginTransaction();
 
-        for(int i=0; i < incomeStatementRecords.size(); i++){
+        for(int i=0; i < record.size(); i++){
             if(i % 10 == 0){
                 currentSession.flush();
                 currentSession.clear();
             }
-            currentSession.save(incomeStatementRecords.get(i));
+            currentSession.save(record.get(i));
         }
-
         currentSession.getTransaction().commit();
     }
 }

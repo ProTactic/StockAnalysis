@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "IncomeStatement")
-public class IncomeStatementRecord extends Record implements Serializable {
+public class IncomeStatementRecord extends Record implements CompanyFinancialRecord {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "symbol")
@@ -97,5 +97,21 @@ public class IncomeStatementRecord extends Record implements Serializable {
 
     public void setNetIncome(Long netIncome) {
         this.netIncome = netIncome;
+    }
+
+    @Override
+    public String getSymbol() {
+        if(companyOverviewRecord != null){
+            return companyOverviewRecord.symbol;
+        }
+        return null;
+    }
+
+    @Override
+    public void setSymbol(String symbol) {
+        if(companyOverviewRecord == null){
+            companyOverviewRecord = new CompanyOverviewRecord();
+        }
+        companyOverviewRecord.setSymbol(symbol);
     }
 }

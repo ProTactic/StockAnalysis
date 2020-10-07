@@ -5,7 +5,6 @@ import DAL.CompanyMapper;
 import java.util.List;
 
 public class SystemManager {
-
     private RemoteDataHandler remoteDataHandler;
     private CompanyMapper companyMapper;
     public SystemManager () {
@@ -25,13 +24,14 @@ public class SystemManager {
         return record;
     }
 
-    List<IncomeStatementRecord> getIncomeStatement(String symbol){
-        List<IncomeStatementRecord> records = companyMapper.getIncomeStatements(symbol);
+    public <E extends CompanyFinancialRecord> List<E> getFinancialStatement(String symbol, Class<E> classType) {
+        List<E> records = companyMapper.getFinancialStatement(symbol, classType);
         if(records.isEmpty()){
-           records = remoteDataHandler.incomeStatement(symbol);
-           if(!records.isEmpty()){
+            records = remoteDataHandler.financialStatement(symbol, classType);
+            System.out.println(records);
+            if(!records.isEmpty()){
                 companyMapper.save(records);
-           }
+            }
         }
         return records;
     }

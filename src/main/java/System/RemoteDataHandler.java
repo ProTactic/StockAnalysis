@@ -23,6 +23,8 @@ public abstract class RemoteDataHandler {
      */
     public abstract CompanyOverviewRecord companyOverview(String tickerSymbol);
 
-    public abstract List<IncomeStatementRecord> incomeStatement(String tickerSymbol);
+    /*public abstract List<IncomeStatementRecord> incomeStatement(String tickerSymbol);
+    public abstract List<BalanceSheetRecord> balanceSheet(String tickerSymbol);*/
+    public abstract <E extends CompanyFinancialRecord> List<E> financialStatement(String data, Class<E> classType);
 
 }

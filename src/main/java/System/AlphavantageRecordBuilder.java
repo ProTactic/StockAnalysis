@@ -31,7 +31,7 @@ public class AlphavantageRecordBuilder implements RecordBuilder {
         return gson.fromJson(data, CompanyOverviewRecord.class);
     }
 
-    public List<IncomeStatementRecord> buildIncomeStatement(String data) {
+    /*public List<IncomeStatementRecord> buildIncomeStatement(String data) {
         Gson gson = new GsonBuilder().create();
         IncomeStatementRecord record;
         List<IncomeStatementRecord> records = new ArrayList<>();
@@ -53,7 +53,56 @@ public class AlphavantageRecordBuilder implements RecordBuilder {
                 records.add(record);
             } catch (ParseException ignored) { }
         }
+        return records;
+    }
 
+    @Override
+    public List<BalanceSheetRecord> buildBalanceSheet(String data) {
+        Gson gson = new GsonBuilder().create();
+        BalanceSheetRecord record;
+        List<BalanceSheetRecord> records = new ArrayList<>();
+        JsonObject json = gson.fromJson(data, JsonObject.class);
+        Date statementDate = null;
+        String symbol;
+
+        symbol = json.get("symbol").getAsJsonPrimitive().getAsString();
+        JsonArray annualReports = json.getAsJsonArray("annualReports");
+        for ( JsonElement statement: annualReports ) {
+            record = gson.fromJson(statement, BalanceSheetRecord.class);
+            record.companyOverviewRecord = new CompanyOverviewRecord();
+
+            record.getCompanyOverviewRecord().setSymbol(symbol);
+            try {
+                statementDate = dateFormat.parse(statement.getAsJsonObject().get("fiscalDateEnding")
+                        .getAsJsonPrimitive().getAsString());
+                record.setDate(statementDate);
+                records.add(record);
+            } catch (ParseException ignored) { }
+        }
+        return records;
+    }*/
+
+    public <E extends CompanyFinancialRecord> List<E> financialStatement(String data, Class<E> classType) {
+        Gson gson = new GsonBuilder().create();
+        E record;
+        List<E> records = new ArrayList<>();
+        JsonObject json = gson.fromJson(data, JsonObject.class);
+        Date statementDate = null;
+        String symbol;
+
+        symbol = json.get("symbol").getAsJsonPrimitive().getAsString();
+        JsonArray annualReports = json.getAsJsonArray("annualReports");
+        for ( JsonElement statement: annualReports ) {
+            record = gson.fromJson(statement, classType);
+
+            record.setSymbol(symbol);
+            try {
+                statementDate = dateFormat.parse(statement.getAsJsonObject().get("fiscalDateEnding")
+                        .getAsJsonPrimitive().getAsString());
+                record.setDate(statementDate);
+                records.add(record);
+            } catch (ParseException ignored) { }
+        }
         return records;
     }
 }

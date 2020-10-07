@@ -1,8 +1,7 @@
 DAL.GeneralMapper
-    + Create a way to save initialize the sessionFactory
+    + Handle the exception that may be thrown from  buildSessionFactory
 
 Implement the code for all of finance statements:
-    + balance sheet
     + cash flow
 
 Design a way to load the API KEY

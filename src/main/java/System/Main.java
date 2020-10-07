@@ -32,7 +32,9 @@ public class Main {
         SystemManager systemManager = new SystemManager();
         CompanyOverviewRecord record = systemManager.getCompanyOverview("IBM");
         System.out.println(record);
-        List<IncomeStatementRecord> records = systemManager.getIncomeStatement("IBM");
+        List<IncomeStatementRecord> records1 = systemManager.getFinancialStatement("IBM", IncomeStatementRecord.class);
+        System.out.println(records1);
+        List<BalanceSheetRecord> records = systemManager.getFinancialStatement("IBM", BalanceSheetRecord.class);
         System.out.println(records);
     }
 }

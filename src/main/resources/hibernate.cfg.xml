@@ -41,6 +41,7 @@
         <!-- List of mapping classes -->
         <mapping class = "System.CompanyOverviewRecord"/>
         <mapping class = "System.IncomeStatementRecord"/>
+        <mapping class = "System.BalanceSheetRecord"/>
 
     </session-factory>
 </hibernate-configuration>

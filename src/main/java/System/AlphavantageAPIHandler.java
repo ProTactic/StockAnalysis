@@ -40,10 +40,53 @@ public class AlphavantageAPIHandler extends RemoteDataHandler {
         }
     }
 
+    /*
+        @Override
+        public List<IncomeStatementRecord> incomeStatement(String tickerSymbol) {
+            RestTemplate restTemplate = new RestTemplate(API_EMPTY_QUERY)
+                    .addKeyValue("function", "INCOME_STATEMENT")
+                    .addKeyValue("symbol", tickerSymbol)
+                    .addKeyValue("apikey", API_KEY);
+
+            HttpRequest request = buildRequest(restTemplate.getRestUrl());
+
+            try {
+                HttpResponse<String> response = websiteAPI.send(request, HttpResponse.BodyHandlers.ofString());
+                return recordBuilder.financialStatement(response.body(), IncomeStatementRecord.class);
+            } catch (IOException | InterruptedException e) {
+                return null;
+            }
+        }
+
+        @Override
+        public List<BalanceSheetRecord> balanceSheet(String tickerSymbol) {
+            RestTemplate restTemplate = new RestTemplate(API_EMPTY_QUERY)
+                    .addKeyValue("function", "BALANCE_SHEET")
+                    .addKeyValue("symbol", tickerSymbol)
+                    .addKeyValue("apikey", API_KEY);
+
+            HttpRequest request = buildRequest(restTemplate.getRestUrl());
+
+            try {
+                HttpResponse<String> response = websiteAPI.send(request, HttpResponse.BodyHandlers.ofString());
+                System.out.println("\n\n" + response.body() + "\n\n");
+                return recordBuilder.financialStatement(response.body(), BalanceSheetRecord.class);
+            } catch (IOException | InterruptedException e) {
+                return null;
+            }
+        }
+    */
     @Override
-    public List<IncomeStatementRecord> incomeStatement(String tickerSymbol) {
+    public <E extends CompanyFinancialRecord> List<E> financialStatement(String tickerSymbol, Class<E> classType) {
+        String functionName = "";
+        if (classType.equals(IncomeStatementRecord.class)) {
+            functionName = "INCOME_STATEMENT";
+        } else {
+            functionName = "BALANCE_SHEET";
+        }
+
         RestTemplate restTemplate = new RestTemplate(API_EMPTY_QUERY)
-                .addKeyValue("function", "INCOME_STATEMENT")
+                .addKeyValue("function", functionName)
                 .addKeyValue("symbol", tickerSymbol)
                 .addKeyValue("apikey", API_KEY);
 
@@ -51,7 +94,8 @@ public class AlphavantageAPIHandler extends RemoteDataHandler {
 
         try {
             HttpResponse<String> response = websiteAPI.send(request, HttpResponse.BodyHandlers.ofString());
-            return recordBuilder.buildIncomeStatement(response.body());
+            System.out.println("\n\n" + response.body() + "\n\n");
+            return recordBuilder.financialStatement(response.body(), classType);
         } catch (IOException | InterruptedException e) {
             return null;
         }

@@ -11,13 +11,12 @@ import java.util.List;
 
 public abstract class GeneralMapper<T, Id extends Serializable> {
 
-    private static SessionFactory sessionFactory;
+    private static final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     protected Session currentSession;
     protected Class<T> classType;
 
     GeneralMapper(Class<T> classType){
-        sessionFactory = HibernateUtil.getSessionFactory();
         openCurrentSession();
         this.classType = classType;
 
