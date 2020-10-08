@@ -1,9 +1,6 @@
 DAL.GeneralMapper
     + Handle the exception that may be thrown from  buildSessionFactory
 
-Implement the code for all of finance statements:
-    + cash flow
-
 Update README
 
 Design a way to load the API KEY

@@ -1,6 +1,6 @@
 package System.SystemInterface;
 
-public class CompanyOverviewDTO extends BusinessDTO{
+public class CompanyOverviewDTO extends AbstractDTO {
     public String symbol;
     public String name;
     public String exchange;

@@ -2,7 +2,7 @@ package System.SystemInterface;
 
 import java.util.Date;
 
-public class BalanceSheetDTO extends BusinessDTO {
+public class BalanceSheetDTO extends AbstractDTO {
     public Date date;
     public String symbol;
 

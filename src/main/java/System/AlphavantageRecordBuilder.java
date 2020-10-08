@@ -1,5 +1,6 @@
 package System;
 
+import System.Records.CashFlowRecord;
 import System.Records.CompanyFinancialRecord;
 import System.Records.CompanyOverviewRecord;
 import System.Records.RecordBuilder;
@@ -44,16 +45,33 @@ public class AlphavantageRecordBuilder implements RecordBuilder {
         symbol = json.get("symbol").getAsJsonPrimitive().getAsString();
         JsonArray annualReports = json.getAsJsonArray("annualReports");
         for ( JsonElement statement: annualReports ) {
-            record = gson.fromJson(statement, classType);
+            record = fromJson(statement, gson, classType);
 
             record.setSymbol(symbol);
             try {
-                statementDate = dateFormat.parse(statement.getAsJsonObject().get("fiscalDateEnding")
-                        .getAsJsonPrimitive().getAsString());
+                statementDate = dateFormat.parse(statement.getAsJsonObject().getAsJsonPrimitive("fiscalDateEnding")
+                        .getAsString());
                 record.setDate(statementDate);
                 records.add(record);
             } catch (ParseException ignored) { }
         }
         return records;
+    }
+
+    private  <E extends CompanyFinancialRecord> E fromJson(JsonElement jsonElement, Gson gson, Class<E> classType){
+        if(classType.equals(CashFlowRecord.class)){
+            JsonObject jsonStatement = jsonElement.getAsJsonObject();
+            CashFlowRecord cRecord = null;
+            try {
+                cRecord = gson.fromJson(jsonElement, CashFlowRecord.class);
+                cRecord.setOperatingCashFlow(jsonStatement.getAsJsonPrimitive("operatingCashflow").getAsLong());
+                cRecord.setFinancingCashFlow(jsonStatement.getAsJsonPrimitive("cashflowFromFinancing").getAsLong());
+                cRecord.setInvestmentCashFlow(jsonStatement.getAsJsonPrimitive("cashflowFromInvestment").getAsLong());
+                cRecord.updateInferredVariables();
+                System.out.println("\n\n" + cRecord);
+                return (E)cRecord;
+            } catch (Exception ignored) { }
+        }
+        return gson.fromJson(jsonElement, classType);
     }
 }

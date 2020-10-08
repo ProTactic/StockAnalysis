@@ -2,9 +2,9 @@ package System.SystemInterface;
 
 import java.lang.reflect.Field;
 
-public abstract class BusinessDTO {
+public abstract class AbstractDTO {
 
-    BusinessDTO() { }
+    AbstractDTO() { }
 
     @Override
     public String toString() {
