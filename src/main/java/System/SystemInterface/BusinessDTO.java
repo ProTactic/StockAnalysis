@@ -1,13 +1,11 @@
-package System;
+package System.SystemInterface;
 
 import java.lang.reflect.Field;
 
-/**
- * This class and subclasses supposed to be data only
- */
-public class Record {
+public abstract class BusinessDTO {
 
-    Record() {}
+    BusinessDTO() { }
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();

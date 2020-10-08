@@ -1,4 +1,4 @@
-package System;
+package System.Records;
 
 import java.util.Date;
 

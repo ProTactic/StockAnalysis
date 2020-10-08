@@ -1,8 +1,6 @@
 package DAL;
-import System.CompanyOverviewRecord;
-import System.IncomeStatementRecord;
-import System.BalanceSheetRecord;
-import System.CompanyFinancialRecord;
+import System.Records.CompanyOverviewRecord;
+import System.Records.CompanyFinancialRecord;
 import org.hibernate.query.Query;
 
 import java.util.List;

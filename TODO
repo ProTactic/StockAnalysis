@@ -4,6 +4,8 @@ DAL.GeneralMapper
 Implement the code for all of finance statements:
     + cash flow
 
+Update README
+
 Design a way to load the API KEY
 
 Create a way to connect the code batch size and hibernate configuration batch size

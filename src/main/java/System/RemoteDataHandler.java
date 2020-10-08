@@ -1,5 +1,9 @@
 package System;
 
+import System.Records.CompanyFinancialRecord;
+import System.Records.CompanyOverviewRecord;
+import System.Records.RecordBuilder;
+
 import java.util.List;
 
 public abstract class RemoteDataHandler {

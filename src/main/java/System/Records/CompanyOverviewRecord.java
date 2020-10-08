@@ -1,4 +1,4 @@
-package System;
+package System.Records;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

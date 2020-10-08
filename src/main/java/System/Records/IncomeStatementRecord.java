@@ -1,7 +1,6 @@
-package System;
+package System.Records;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Date;
 
 @Entity

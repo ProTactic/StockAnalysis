@@ -1,5 +1,9 @@
 package System;
 
+import System.Records.CompanyFinancialRecord;
+import System.Records.CompanyOverviewRecord;
+import System.Records.IncomeStatementRecord;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;

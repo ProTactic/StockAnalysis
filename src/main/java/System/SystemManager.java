@@ -1,6 +1,8 @@
 package System;
 
 import DAL.CompanyMapper;
+import System.Records.CompanyFinancialRecord;
+import System.Records.CompanyOverviewRecord;
 
 import java.util.List;
 
@@ -12,7 +14,7 @@ public class SystemManager {
         companyMapper = new CompanyMapper();
     }
 
-    CompanyOverviewRecord getCompanyOverview(String symbol){
+    public CompanyOverviewRecord getCompanyOverview(String symbol){
         CompanyOverviewRecord record = companyMapper.findById(symbol);
         if(record == null){
             record = remoteDataHandler.companyOverview(symbol);

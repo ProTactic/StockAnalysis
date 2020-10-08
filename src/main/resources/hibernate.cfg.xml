@@ -39,9 +39,9 @@
         </property>
 
         <!-- List of mapping classes -->
-        <mapping class = "System.CompanyOverviewRecord"/>
-        <mapping class = "System.IncomeStatementRecord"/>
-        <mapping class = "System.BalanceSheetRecord"/>
+        <mapping class = "System.Records.CompanyOverviewRecord"/>
+        <mapping class = "System.Records.IncomeStatementRecord"/>
+        <mapping class = "System.Records.BalanceSheetRecord"/>
 
     </session-factory>
 </hibernate-configuration>
