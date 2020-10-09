@@ -1,9 +1,5 @@
 DAL.GeneralMapper
     + Handle the exception that may be thrown from  buildSessionFactory
 
-Create custom system exception to indicate errors that can be thrown when initializing the System
-
-Update README
-
 Create a way to connect the code batch size and hibernate configuration batch size
 Optimize cash using the level one cash of hibernate with the batch insert

@@ -1,22 +1,30 @@
 package System.SystemInterface;
 
+import Exceptions.StockSystemException;
 import System.Records.BalanceSheetRecord;
 import System.Records.CashFlowRecord;
 import System.Records.CompanyOverviewRecord;
 import System.Records.IncomeStatementRecord;
-import System.SystemManager;
+import System.StcokSystemManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SystemController {
+    private static SystemController instance;
+    private StcokSystemManager systemManager;
 
-    private static SystemManager systemManager;
+    SystemController(StcokSystemManager systemManager) {
+            this.systemManager = systemManager;
 
-    public SystemController(){
-        if(systemManager == null){
-            systemManager = SystemManager.getInstance();
+    }
+
+    public static SystemController getInstance() throws StockSystemException {
+        if(instance == null){
+            StcokSystemManager systemManager = StcokSystemManager.getInstance();
+            instance = new SystemController(systemManager);
         }
+        return instance;
     }
 
     public CompanyOverviewDTO getCompanyOverview(String symbol){

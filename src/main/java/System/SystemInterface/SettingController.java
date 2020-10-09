@@ -1,17 +1,26 @@
 package System.SystemInterface;
 
-import System.SystemManager;
+import System.SystemSettingManager;
 
 public class SettingController {
 
-    private SystemManager systemManager;
+    private static SettingController instance;
+    private SystemSettingManager systemSettingManager;
 
-    public SettingController(){
-        systemManager = SystemManager.getInstance();
+    SettingController() {
+        this.systemSettingManager = new SystemSettingManager();
     }
 
+    public static SettingController getInstance() {
+        if(instance == null){
+            instance = new SettingController();
+        }
+        return instance;
+    }
+
+
     public void saveOrUpdateAPIKey(APIKeySupplier keySupplier, String key){
-        systemManager.saveOrUpdateAPIKey(keySupplier.name(), key);
+        systemSettingManager.saveOrUpdateAPIKey(keySupplier.name(), key);
     }
 }
 

@@ -19,7 +19,7 @@ public class APIKeyMapper extends GeneralMapper<APIKey, String> {
 
     public void saveOrUpdate(APIKey apiKey){
         currentSession.beginTransaction();
-        currentSession.saveOrUpdate(apiKey);
+        currentSession.merge(apiKey);
         currentSession.getTransaction().commit();
     }
 }
