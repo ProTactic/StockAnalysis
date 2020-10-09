@@ -14,5 +14,8 @@ public class Main {
         System.out.println("\n\nBalance sheet:\n"+ records);
         List<CashFlowDTO> records2 = systemController.getLastCashFlows("IBM");
         System.out.println("\n\nCash flows:\n"+ records2);
+
+        /*SettingController settingController = new SettingController();
+        settingController.saveOrUpdateAPIKey(APIKeySupplier.ALPHA_ADVANTAGE, "");*/
     }
 }

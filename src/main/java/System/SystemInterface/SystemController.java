@@ -15,7 +15,7 @@ public class SystemController {
 
     public SystemController(){
         if(systemManager == null){
-            systemManager = new SystemManager();
+            systemManager = SystemManager.getInstance();
         }
     }
 

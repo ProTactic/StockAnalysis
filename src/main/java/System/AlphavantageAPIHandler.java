@@ -4,6 +4,7 @@ import System.Records.BalanceSheetRecord;
 import System.Records.CompanyFinancialRecord;
 import System.Records.CompanyOverviewRecord;
 import System.Records.IncomeStatementRecord;
+import com.sun.istack.NotNull;
 
 import java.io.IOException;
 import java.net.URI;
@@ -14,14 +15,15 @@ import java.util.List;
 
 public class AlphavantageAPIHandler extends RemoteDataHandler {
 
-    final String API_EMPTY_QUERY = "https://www.alphavantage.co/query?";
-    //TODO set your key
-    final String API_KEY = "DHGQ9VIBRHBR51ZW";
+    private final String API_EMPTY_QUERY = "https://www.alphavantage.co/query?";
+
+    private final String API_KEY;
 
     private HttpClient websiteAPI;
 
-    public AlphavantageAPIHandler(){
+    public AlphavantageAPIHandler(@NotNull String apiKey){
         websiteAPI = HttpClient.newHttpClient();
+        API_KEY = apiKey;
     }
 
     @Override
