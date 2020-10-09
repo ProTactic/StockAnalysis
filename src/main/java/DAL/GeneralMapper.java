@@ -40,7 +40,7 @@ public abstract class GeneralMapper<T, Id extends Serializable> {
 
     public void save(T entity){
         currentSession.beginTransaction();
-        currentSession.save(entity);
+        currentSession.persist(entity);
         currentSession.getTransaction().commit();
     }
 

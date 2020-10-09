@@ -36,6 +36,11 @@ public class HibernateUtil {
         }
     }
 
+    public static SessionFactory getSessionFactory() {
+        if(sessionFactory == null) sessionFactory = buildSessionFactory();
+        return sessionFactory;
+    }
+
     /*private static SessionFactory buildSessionJavaConfigFactory() {
         try {
             Configuration configuration = new Configuration();
@@ -67,11 +72,6 @@ public class HibernateUtil {
             throw new ExceptionInInitializerError(ex);
         }
     }*/
-
-    public static SessionFactory getSessionFactory() {
-        if(sessionFactory == null) sessionFactory = buildSessionFactory();
-        return sessionFactory;
-    }
 
     /*public static SessionFactory getSessionJavaConfigFactory() {
         if(sessionJavaConfigFactory == null) sessionJavaConfigFactory = buildSessionJavaConfigFactory();

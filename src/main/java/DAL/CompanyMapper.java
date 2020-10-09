@@ -29,5 +29,6 @@ public class CompanyMapper extends GeneralMapper<CompanyOverviewRecord, String> 
             currentSession.save(record.get(i));
         }
         currentSession.getTransaction().commit();
+        currentSession.clear();
     }
 }

@@ -1,5 +1,4 @@
 DAL.GeneralMapper
-    + Handle the exception that may be thrown from  buildSessionFactory
-
-Create a way to connect the code batch size and hibernate configuration batch size
-Optimize cash using the level one cash of hibernate with the batch insert
+    + Edit hibernate configuration to initialize from the class builder
+    + Create a way to connect the code batch size and hibernate configuration batch size
+      Optimize cash using the level one cash of hibernate with the batch insert
