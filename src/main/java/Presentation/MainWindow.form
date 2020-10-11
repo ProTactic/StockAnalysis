@@ -132,6 +132,11 @@
                     <constraints/>
                     <properties>
                       <autoCreateRowSorter value="false"/>
+                      <enabled value="true"/>
+                      <fillsViewportHeight value="false"/>
+                      <font name="Segoe UI Semilight" size="16"/>
+                      <showHorizontalLines value="true"/>
+                      <showVerticalLines value="false"/>
                     </properties>
                   </component>
                 </children>

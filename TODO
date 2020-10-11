@@ -4,5 +4,6 @@ DAL.GeneralMapper
       Optimize cash using the level one cash of hibernate with the batch insert
 
 Refactor the MainWindow code
+Create method to split the name of each field by the capital letter
 
 NULL return if the symbol doesnt exist

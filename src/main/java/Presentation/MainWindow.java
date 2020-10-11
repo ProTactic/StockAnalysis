@@ -13,7 +13,11 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Vector;
 
 public class MainWindow extends JFrame {
 
@@ -60,23 +64,27 @@ public class MainWindow extends JFrame {
 
         this.setVisible(true);
         this.toFront();
+    }
+
+    private void setListeners(){
+        //Search Button
+        searchButton.addActionListener(new ButtonSearchAction());
+
+        //Search text field
+        searchTextField.addKeyListener(new TextFieldKeyListener());
 
         tabbedPanel.addChangeListener((ChangeEvent e) -> {
             updateTabbedData();
         });
 
-        String[] columnsNames = {"Date", "Total revenue", "cost of revenue", "Gross profit",
-                "Operating expense", "Operating income", "Net income"};
-        incomeStatementTable.setModel(new DefaultTableModel(columnsNames, 0));
-        incomeStatementTable.getColumnModel().getColumn(0).setCellRenderer(new ColumnColorRenderer(Color.getHSBColor(0,0, (float) 0.94), Color.BLACK));
-    }
-
-    private void setListeners(){
-        searchButton.addActionListener(new ButtonSearchAction());
     }
 
     private void updateTabbedData(){
         String symbol = searchTextField.getText();
+        if(symbol.equals("")){
+            return;
+        }
+
         int tabIndex = tabbedPanel.getSelectedIndex();
         if(tabIndex == 0) {
             CompanyOverviewDTO companyOverview = systemController.getCompanyOverview(symbol);
@@ -86,14 +94,44 @@ public class MainWindow extends JFrame {
             coCurrency.setText("Currency : " + companyOverview.currency);
             coSector.setText("Sector : " + companyOverview.sector);
         } else if(tabIndex == 1){
-            DefaultTableModel tableModel = (DefaultTableModel) incomeStatementTable.getModel();
-            tableModel.setRowCount(0);
             List<IncomeStatementDTO> incomeStatementDTOS = systemController.getLastIncomeStatements(symbol);
+            Vector<String> dates = new Vector<>();
+
+            dates.add("Date");
             for (IncomeStatementDTO dto: incomeStatementDTOS) {
-                Object[] data = {dto.date, dto.totalRevenue, dto.costOfRevenue, dto.grossProfit,
-                        dto.totalOperatingExpense, dto.operatingIncome, dto.netIncome};
-                tableModel.addRow(data);
+                dates.add(dto.date.toString());
             }
+
+            Field[] fields = IncomeStatementDTO.class.getDeclaredFields();
+            DefaultTableModel defaultTableModel = new DefaultTableModel(dates, fields.length - 2);
+            incomeStatementTable.setModel(defaultTableModel);
+            incomeStatementTable.getColumnModel().getColumn(0).setCellRenderer(new ColumnColorRenderer(Color.getHSBColor(0,0, (float) 0.94), Color.BLACK));
+            DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
+            defaultTableCellRenderer.setHorizontalAlignment(JLabel.CENTER);
+            defaultTableCellRenderer.setFont(new Font(Font.SERIF, Font.BOLD, 24));
+            for(int i=1; i < incomeStatementTable.getColumnCount(); i++){
+                incomeStatementTable.getColumnModel().getColumn(i).setCellRenderer(defaultTableCellRenderer);
+            }
+
+            int atRow = 0;
+            int atColumn = 1;
+            for ( Field field : fields  ) {
+                if(field.getName().equals("symbol") || field.getName().equals("date")){
+                    continue;
+                }
+
+                defaultTableModel.setValueAt(field.getName(), atRow, 0);
+                for (IncomeStatementDTO dto: incomeStatementDTOS) {
+                    try {
+                        defaultTableModel.setValueAt(field.get(dto).toString(), atRow, atColumn);
+                    } catch (IllegalAccessException ignored) {
+                    }
+                    ++atColumn;
+                }
+                ++atRow;
+                atColumn = 1;
+            }
+
         }
     }
 
@@ -106,6 +144,24 @@ public class MainWindow extends JFrame {
         }
     }
 
+    protected class TextFieldKeyListener implements KeyListener {
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            if(e.getExtendedKeyCode() == KeyEvent.VK_ENTER){
+                updateTabbedData();
+            }
+        }
+    }
+
     /*** table column models ***/
     class ColumnColorRenderer extends DefaultTableCellRenderer {
         Color backgroundColor, foregroundColor;
@@ -113,11 +169,14 @@ public class MainWindow extends JFrame {
             super();
             this.backgroundColor = backgroundColor;
             this.foregroundColor = foregroundColor;
+            this.setHorizontalAlignment(JLabel.CENTER);
         }
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,   boolean hasFocus, int row, int column) {
             Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             cell.setBackground(backgroundColor);
             cell.setForeground(foregroundColor);
+            this.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
+
             return cell;
         }
     }
