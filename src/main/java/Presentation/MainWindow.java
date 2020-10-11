@@ -2,11 +2,15 @@ package Presentation;
 
 import Exceptions.StockSystemException;
 import System.SystemInterface.CompanyOverviewDTO;
+import System.SystemInterface.IncomeStatementDTO;
 import System.SystemInterface.SystemController;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class MainWindow extends JFrame {
 
@@ -23,14 +27,17 @@ public class MainWindow extends JFrame {
     /*** data panel ***/
     private JPanel dataPanel;
     private JTabbedPane tabbedPanel;
+    private JScrollPane incomeStatementTab;
     private JPanel companyOverviewTab;
-    private JPanel incomeStatementTab;
 
     /*** company overview tab ***/
     private JLabel coName;
     private JLabel coCountry;
     private JLabel coCurrency;
     private JLabel coSector;
+
+    /*** income statement tab ***/
+    private JTable incomeStatementTable;
 
     public MainWindow(){
         super("Stock analysis");
@@ -50,6 +57,10 @@ public class MainWindow extends JFrame {
 
         this.setVisible(true);
         this.toFront();
+
+        String[] columnsNames = {"Date", "Total revenue", "cost of revenue", "Gross profit",
+                "Operating expense", "Operating income", "Net income"};
+        incomeStatementTable.setModel(new DefaultTableModel(columnsNames, 0));
     }
 
     private void setListeners(){
@@ -62,12 +73,24 @@ public class MainWindow extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             String symbol = searchTextField.getText();
-            CompanyOverviewDTO companyOverview = systemController.getCompanyOverview(symbol);
-            coName.setText(String.format("%s (%s : %s)", companyOverview.name,
-                                                companyOverview.exchange, symbol.toUpperCase()));
-            coCountry.setText("Country : " + companyOverview.country);
-            coCurrency.setText("Currency : " + companyOverview.currency);
-            coSector.setText("Sector : " + companyOverview.sector);
+            int tabIndex = tabbedPanel.getSelectedIndex();
+            if(tabIndex == 0) {
+                CompanyOverviewDTO companyOverview = systemController.getCompanyOverview(symbol);
+                coName.setText(String.format("%s (%s : %s)", companyOverview.name,
+                        companyOverview.exchange, symbol.toUpperCase()));
+                coCountry.setText("Country : " + companyOverview.country);
+                coCurrency.setText("Currency : " + companyOverview.currency);
+                coSector.setText("Sector : " + companyOverview.sector);
+            } else if(tabIndex == 1){
+                DefaultTableModel tableModel = (DefaultTableModel) incomeStatementTable.getModel();
+                tableModel.setRowCount(0);
+                List<IncomeStatementDTO> incomeStatementDTOS = systemController.getLastIncomeStatements(symbol);
+                for (IncomeStatementDTO dto: incomeStatementDTOS) {
+                    Object[] data = {dto.date, dto.totalRevenue, dto.costOfRevenue, dto.grossProfit,
+                                    dto.totalOperatingExpense, dto.operatingIncome, dto.netIncome};
+                    tableModel.addRow(data);
+                }
+            }
         }
     }
 
