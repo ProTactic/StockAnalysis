@@ -6,6 +6,7 @@ import System.SystemInterface.IncomeStatementDTO;
 import System.SystemInterface.SystemController;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -60,6 +61,10 @@ public class MainWindow extends JFrame {
         this.setVisible(true);
         this.toFront();
 
+        tabbedPanel.addChangeListener((ChangeEvent e) -> {
+            updateTabbedData();
+        });
+
         String[] columnsNames = {"Date", "Total revenue", "cost of revenue", "Gross profit",
                 "Operating expense", "Operating income", "Net income"};
         incomeStatementTable.setModel(new DefaultTableModel(columnsNames, 0));
@@ -70,30 +75,34 @@ public class MainWindow extends JFrame {
         searchButton.addActionListener(new ButtonSearchAction());
     }
 
+    private void updateTabbedData(){
+        String symbol = searchTextField.getText();
+        int tabIndex = tabbedPanel.getSelectedIndex();
+        if(tabIndex == 0) {
+            CompanyOverviewDTO companyOverview = systemController.getCompanyOverview(symbol);
+            coName.setText(String.format("%s (%s : %s)", companyOverview.name,
+                    companyOverview.exchange, symbol.toUpperCase()));
+            coCountry.setText("Country : " + companyOverview.country);
+            coCurrency.setText("Currency : " + companyOverview.currency);
+            coSector.setText("Sector : " + companyOverview.sector);
+        } else if(tabIndex == 1){
+            DefaultTableModel tableModel = (DefaultTableModel) incomeStatementTable.getModel();
+            tableModel.setRowCount(0);
+            List<IncomeStatementDTO> incomeStatementDTOS = systemController.getLastIncomeStatements(symbol);
+            for (IncomeStatementDTO dto: incomeStatementDTOS) {
+                Object[] data = {dto.date, dto.totalRevenue, dto.costOfRevenue, dto.grossProfit,
+                        dto.totalOperatingExpense, dto.operatingIncome, dto.netIncome};
+                tableModel.addRow(data);
+            }
+        }
+    }
+
     /*** listeners ***/
 
     protected class ButtonSearchAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String symbol = searchTextField.getText();
-            int tabIndex = tabbedPanel.getSelectedIndex();
-            if(tabIndex == 0) {
-                CompanyOverviewDTO companyOverview = systemController.getCompanyOverview(symbol);
-                coName.setText(String.format("%s (%s : %s)", companyOverview.name,
-                        companyOverview.exchange, symbol.toUpperCase()));
-                coCountry.setText("Country : " + companyOverview.country);
-                coCurrency.setText("Currency : " + companyOverview.currency);
-                coSector.setText("Sector : " + companyOverview.sector);
-            } else if(tabIndex == 1){
-                DefaultTableModel tableModel = (DefaultTableModel) incomeStatementTable.getModel();
-                tableModel.setRowCount(0);
-                List<IncomeStatementDTO> incomeStatementDTOS = systemController.getLastIncomeStatements(symbol);
-                for (IncomeStatementDTO dto: incomeStatementDTOS) {
-                    Object[] data = {dto.date, dto.totalRevenue, dto.costOfRevenue, dto.grossProfit,
-                                    dto.totalOperatingExpense, dto.operatingIncome, dto.netIncome};
-                    tableModel.addRow(data);
-                }
-            }
+            updateTabbedData();
         }
     }
 
