@@ -5,7 +5,9 @@ import java.util.Date;
 
 @Entity
 @Table(name = "CashFlow")
+@IdClass(CompanyFinancialRecord.FinancialId.class)
 public class CashFlowRecord extends Record implements CompanyFinancialRecord {
+    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "symbol")
     public CompanyOverviewRecord companyOverviewRecord;

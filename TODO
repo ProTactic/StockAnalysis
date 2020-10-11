@@ -4,4 +4,3 @@ DAL.GeneralMapper
       Optimize cash using the level one cash of hibernate with the batch insert
 
 NULL return if the symbol doesnt exist
-letter case on search

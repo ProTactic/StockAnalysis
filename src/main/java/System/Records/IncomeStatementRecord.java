@@ -5,8 +5,10 @@ import java.util.Date;
 
 @Entity
 @Table(name = "IncomeStatement")
+@IdClass(value = CompanyFinancialRecord.FinancialId.class)
 public class IncomeStatementRecord extends Record implements CompanyFinancialRecord {
 
+    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "symbol")
     public CompanyOverviewRecord companyOverviewRecord;
