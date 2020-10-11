@@ -2,9 +2,7 @@ package System.SystemInterface;
 
 import java.util.Date;
 
-public class BalanceSheetDTO extends AbstractDTO {
-    public Date date;
-    public String symbol;
+public class BalanceSheetDTO extends FinancialDTO {
 
     public Long totalAssets;
     public Long totalCurrentAssets;
@@ -16,10 +14,11 @@ public class BalanceSheetDTO extends AbstractDTO {
 
     public Long totalShareholderEquity;
 
-    public BalanceSheetDTO() { }
+    public BalanceSheetDTO() { super(); }
 
     public BalanceSheetDTO(Date date, String symbol, Long totalAssets, Long totalCurrentAssets, Long totalNonCurrentAssets,
                            Long totalLiabilities, Long totalCurrentLiabilities, Long totalNonCurrentLiabilities, Long totalShareholderEquity) {
+        super();
         this.date = new Date(date.getTime());
         this.symbol = symbol;
         this.totalAssets = totalAssets;

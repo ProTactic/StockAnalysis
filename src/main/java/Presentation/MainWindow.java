@@ -1,18 +1,15 @@
 package Presentation;
 
 import Exceptions.StockSystemException;
-import System.SystemInterface.CompanyOverviewDTO;
-import System.SystemInterface.IncomeStatementDTO;
-import System.SystemInterface.SystemController;
+import System.SystemInterface.*;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.reflect.Field;
@@ -34,7 +31,8 @@ public class MainWindow extends JFrame {
     /*** data panel ***/
     private JPanel dataPanel;
     private JTabbedPane tabbedPanel;
-    private JScrollPane incomeStatementTab;
+    private final int COMPANY_OVERVIEW_TAB = 0;
+    private final int FINANCIAL_TAB = 1;
     private JPanel companyOverviewTab;
 
     /*** company overview tab ***/
@@ -43,8 +41,14 @@ public class MainWindow extends JFrame {
     private JLabel coCurrency;
     private JLabel coSector;
 
-    /*** income statement tab ***/
+    /*** Financial tab ***/
     private JTable incomeStatementTable;
+    private JPanel Financial;
+    private String[] comboOptions = {"Income statement", "Balance Sheet", "Cash Flow"};
+    private final int COMBO_BOX_INCOME_STATEMENT_INDEX = 0;
+    private final int COMBO_BOX_BALANCE_SHEET_INDEX = 1;
+    private final int COMBO_BOX_CASH_FLOW_INDEX = 2;
+    private JComboBox<String> comboBox1;
 
     public MainWindow(){
         super("Stock analysis");
@@ -62,19 +66,33 @@ public class MainWindow extends JFrame {
         this.setSize(720,640);
         this.setContentPane(mainPanel);
 
+        for (String option: comboOptions) {
+            comboBox1.addItem(option);
+        }
+
         this.setVisible(true);
         this.toFront();
     }
 
     private void setListeners(){
         //Search Button
-        searchButton.addActionListener(new ButtonSearchAction());
+        searchButton.addActionListener((ActionEvent e) -> { updateTabbedData(); });
 
         //Search text field
         searchTextField.addKeyListener(new TextFieldKeyListener());
 
         tabbedPanel.addChangeListener((ChangeEvent e) -> {
             updateTabbedData();
+        });
+
+        comboBox1.addItemListener((ItemEvent e) -> {
+            if(e.getStateChange() == ItemEvent.SELECTED){
+                String symbol = searchTextField.getText();
+                if(symbol.equals("")){
+                    return;
+                }
+                updateFinancialTab(symbol);
+            }
         });
 
     }
@@ -86,63 +104,92 @@ public class MainWindow extends JFrame {
         }
 
         int tabIndex = tabbedPanel.getSelectedIndex();
-        if(tabIndex == 0) {
-            CompanyOverviewDTO companyOverview = systemController.getCompanyOverview(symbol);
-            coName.setText(String.format("%s (%s : %s)", companyOverview.name,
-                    companyOverview.exchange, symbol.toUpperCase()));
-            coCountry.setText("Country : " + companyOverview.country);
-            coCurrency.setText("Currency : " + companyOverview.currency);
-            coSector.setText("Sector : " + companyOverview.sector);
-        } else if(tabIndex == 1){
-            List<IncomeStatementDTO> incomeStatementDTOS = systemController.getLastIncomeStatements(symbol);
-            Vector<String> dates = new Vector<>();
-
-            dates.add("Date");
-            for (IncomeStatementDTO dto: incomeStatementDTOS) {
-                dates.add(dto.date.toString());
-            }
-
-            Field[] fields = IncomeStatementDTO.class.getDeclaredFields();
-            DefaultTableModel defaultTableModel = new DefaultTableModel(dates, fields.length - 2);
-            incomeStatementTable.setModel(defaultTableModel);
-            incomeStatementTable.getColumnModel().getColumn(0).setCellRenderer(new ColumnColorRenderer(Color.getHSBColor(0,0, (float) 0.94), Color.BLACK));
-            DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
-            defaultTableCellRenderer.setHorizontalAlignment(JLabel.CENTER);
-            defaultTableCellRenderer.setFont(new Font(Font.SERIF, Font.BOLD, 24));
-            for(int i=1; i < incomeStatementTable.getColumnCount(); i++){
-                incomeStatementTable.getColumnModel().getColumn(i).setCellRenderer(defaultTableCellRenderer);
-            }
-
-            int atRow = 0;
-            int atColumn = 1;
-            for ( Field field : fields  ) {
-                if(field.getName().equals("symbol") || field.getName().equals("date")){
-                    continue;
-                }
-
-                defaultTableModel.setValueAt(field.getName(), atRow, 0);
-                for (IncomeStatementDTO dto: incomeStatementDTOS) {
-                    try {
-                        defaultTableModel.setValueAt(field.get(dto).toString(), atRow, atColumn);
-                    } catch (IllegalAccessException ignored) {
-                    }
-                    ++atColumn;
-                }
-                ++atRow;
-                atColumn = 1;
-            }
-
+        if(tabIndex == COMPANY_OVERVIEW_TAB) {
+            updateCompanyOverviewTabData(symbol);
+        } else if(tabIndex == FINANCIAL_TAB){
+            updateFinancialTab(symbol);
         }
+    }
+
+    private void updateCompanyOverviewTabData(String symbol){
+        CompanyOverviewDTO companyOverview = systemController.getCompanyOverview(symbol);
+        coName.setText(String.format("%s (%s : %s)", companyOverview.name,
+                companyOverview.exchange, symbol.toUpperCase()));
+        coCountry.setText("Country : " + companyOverview.country);
+        coCurrency.setText("Currency : " + companyOverview.currency);
+        coSector.setText("Sector : " + companyOverview.sector);
+    }
+
+    private void updateFinancialTab(String symbol) {
+        List<? extends FinancialDTO> financialDTOS;
+        Vector<String> dates = new Vector<>();
+        Field[] fields = null;
+
+        int comboSelectedIndex = comboBox1.getSelectedIndex();
+        switch (comboSelectedIndex){
+            case COMBO_BOX_INCOME_STATEMENT_INDEX: {
+                financialDTOS = systemController.getLastIncomeStatements(symbol);
+                fields = IncomeStatementDTO.class.getFields();
+                break;
+            }
+            case COMBO_BOX_BALANCE_SHEET_INDEX: {
+                financialDTOS = systemController.getLastBalanceSheets(symbol);
+                fields = BalanceSheetDTO.class.getFields();
+                break;
+            }
+            case COMBO_BOX_CASH_FLOW_INDEX: {
+                financialDTOS = systemController.getLastCashFlows(symbol);
+                fields = CashFlowDTO.class.getFields();
+                break;
+            }
+            default:
+                throw new IllegalStateException("Unexpected value: " + comboBox1.getSelectedIndex());
+        }
+        dates.add("Date");
+        for (FinancialDTO dto: financialDTOS) {
+            dates.add(dto.date.toString());
+        }
+
+        DefaultTableModel defaultTableModel = cleanAndInitializeFinancialTable(dates, fields);
+        updateFinancialTable(financialDTOS, fields, defaultTableModel);
+    }
+
+
+    private void updateFinancialTable(List<? extends FinancialDTO> financialDTOS, Field[] fields, DefaultTableModel defaultTableModel) {
+        int atRow = 0;
+        int atColumn = 1;
+        for ( Field field : fields  ) {
+            if(field.getName().equals("symbol") || field.getName().equals("date")){
+                continue;
+            }
+
+            defaultTableModel.setValueAt(field.getName(), atRow, 0);
+            for (FinancialDTO dto: financialDTOS) {
+                try {
+                    defaultTableModel.setValueAt(field.get(dto).toString(), atRow, atColumn);
+                } catch (IllegalAccessException ignored) {
+                }
+                ++atColumn;
+            }
+            ++atRow;
+            atColumn = 1;
+        }
+    }
+
+    private DefaultTableModel cleanAndInitializeFinancialTable(Vector<String> dates, Field[] fields) {
+        DefaultTableModel defaultTableModel = new DefaultTableModel(dates, fields.length - 2);
+        incomeStatementTable.setModel(defaultTableModel);
+        incomeStatementTable.getColumnModel().getColumn(0).setCellRenderer(new ColumnColorRenderer(Color.getHSBColor(0,0, (float) 0.94), Color.BLACK));
+        DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
+        defaultTableCellRenderer.setHorizontalAlignment(JLabel.CENTER);
+        defaultTableCellRenderer.setFont(new Font(Font.SERIF, Font.BOLD, 24));
+        for(int i=1; i < incomeStatementTable.getColumnCount(); i++){
+            incomeStatementTable.getColumnModel().getColumn(i).setCellRenderer(defaultTableCellRenderer);
+        }
+        return defaultTableModel;
     }
 
     /*** listeners ***/
-
-    protected class ButtonSearchAction implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            updateTabbedData();
-        }
-    }
 
     protected class TextFieldKeyListener implements KeyListener {
 

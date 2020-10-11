@@ -2,10 +2,8 @@ package System.SystemInterface;
 
 import java.util.Date;
 
-public class IncomeStatementDTO extends AbstractDTO {
+public class IncomeStatementDTO extends FinancialDTO {
 
-    public String symbol;
-    public Date date;
     public Long totalRevenue;
     public Long costOfRevenue;
     public Long grossProfit;
@@ -14,10 +12,12 @@ public class IncomeStatementDTO extends AbstractDTO {
     public Long netIncome;
 
     public IncomeStatementDTO() {
+        super();
     }
 
     public IncomeStatementDTO(String symbol, Date date, Long totalRevenue, Long costOfRevenue, Long grossProfit,
                               Long totalOperatingExpense, Long operatingIncome, Long netIncome) {
+        super();
         this.symbol = symbol;
         this.date = new Date(date.getTime());
         this.totalRevenue = totalRevenue;
