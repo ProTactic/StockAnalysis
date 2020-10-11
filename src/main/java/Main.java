@@ -10,9 +10,9 @@ public class Main {
             /*SettingController settingController = SettingController.getInstance();
             settingController.saveOrUpdateAPIKey(APIKeySupplier.ALPHA_ADVANTAGE, "");*/
             SystemController systemController = SystemController.getInstance();
-            CompanyOverviewDTO record = systemController.getCompanyOverview("IBM");
+            CompanyOverviewDTO record = systemController.getCompanyOverview("ibm");
             System.out.println("\n\n" + record);
-            List<IncomeStatementDTO> records1 = systemController.getLastIncomeStatements("IBM");
+            List<IncomeStatementDTO> records1 = systemController.getLastIncomeStatements("ibm");
             System.out.println("\n\nIncome statement:\n" + records1);
             List<BalanceSheetDTO> records = systemController.getLastBalanceSheets("IBM");
             System.out.println("\n\nBalance sheet:\n" + records);

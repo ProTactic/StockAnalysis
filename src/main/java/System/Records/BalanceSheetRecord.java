@@ -5,10 +5,12 @@ import java.util.Date;
 
 @Entity
 @Table(name = "BalanceSheet")
+@IdClass(value = CompanyFinancialRecord.FinancialId.class)
 public class BalanceSheetRecord extends Record implements CompanyFinancialRecord{
     @Id
     public Date date;
 
+    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "symbol")
     public CompanyOverviewRecord companyOverviewRecord;

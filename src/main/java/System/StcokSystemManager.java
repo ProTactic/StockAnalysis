@@ -53,6 +53,7 @@ public class StcokSystemManager {
     /********************************/
 
     public CompanyOverviewRecord getCompanyOverview(String symbol){
+        symbol = symbol.toUpperCase();
         CompanyOverviewRecord record = companyMapper.findById(symbol);
         if(record == null){
             record = remoteDataHandler.companyOverview(symbol);
@@ -65,6 +66,7 @@ public class StcokSystemManager {
     }
 
     public <E extends CompanyFinancialRecord> List<E> getFinancialStatement(String symbol, Class<E> classType) {
+        symbol = symbol.toUpperCase();
         List<E> records = companyMapper.getFinancialStatement(symbol, classType);
         if(records.isEmpty()){
             records = remoteDataHandler.financialStatement(symbol, classType);
