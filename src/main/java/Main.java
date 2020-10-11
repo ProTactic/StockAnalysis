@@ -1,8 +1,4 @@
-import Exceptions.StockSystemException;
 import Presentation.MainWindow;
-import System.SystemInterface.*;
-
-import java.util.List;
 
 public class Main {
     public static void main(String[] args){
@@ -24,6 +20,5 @@ public class Main {
         }*/
 
         MainWindow mainWindow = new MainWindow();
-
     }
 }
