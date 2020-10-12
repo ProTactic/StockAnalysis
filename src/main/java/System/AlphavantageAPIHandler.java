@@ -4,6 +4,9 @@ import System.Records.BalanceSheetRecord;
 import System.Records.CompanyFinancialRecord;
 import System.Records.CompanyOverviewRecord;
 import System.Records.IncomeStatementRecord;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.sun.istack.NotNull;
 
 import java.io.IOException;
@@ -17,13 +20,26 @@ public class AlphavantageAPIHandler extends RemoteDataHandler {
 
     private final String API_EMPTY_QUERY = "https://www.alphavantage.co/query?";
 
-    private final String API_KEY;
+    private String API_KEY;
 
     private HttpClient websiteAPI;
 
-    public AlphavantageAPIHandler(@NotNull String apiKey){
+    AlphavantageAPIHandler(@NotNull String apiKey){
         websiteAPI = HttpClient.newHttpClient();
         API_KEY = apiKey;
+    }
+
+    /**
+     * Build a class instance
+     * @param apiKey the api key
+     * @return null if the api key is valid
+     */
+    public static AlphavantageAPIHandler buildAlphavantageAPIHandler(@NotNull String apiKey){
+        AlphavantageAPIHandler apiHandler = new AlphavantageAPIHandler(apiKey);
+        if(!apiHandler.isValidKey(apiKey)){
+            return null;
+        }
+        return apiHandler;
     }
 
     @Override
@@ -41,6 +57,10 @@ public class AlphavantageAPIHandler extends RemoteDataHandler {
 
         try {
             HttpResponse<String> response = websiteAPI.send(request, HttpResponse.BodyHandlers.ofString());
+            if(isErrorResponse(response.body())){
+                return null;
+            }
+
             return recordBuilder.buildCompanyOverview(response.body());
         } catch (IOException | InterruptedException e) {
             return null;
@@ -69,11 +89,41 @@ public class AlphavantageAPIHandler extends RemoteDataHandler {
 
         try {
             HttpResponse<String> response = websiteAPI.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("\n\n" + response.body() + "\n\n");
+            if(isErrorResponse(response.body())){
+                return null;
+            }
+
             return recordBuilder.financialStatement(response.body(), classType);
         } catch (IOException | InterruptedException e) {
             return null;
         }
+    }
+
+    public boolean isValidKey(@NotNull String apiKey){
+        RestTemplate restTemplate = new RestTemplate(API_EMPTY_QUERY)
+                .addKeyValue("function", "INCOME_STATEMENT")
+                .addKeyValue("symbol", "DISCA")
+                .addKeyValue("apikey", API_KEY);
+        HttpRequest request = buildRequest(restTemplate.getRestUrl());
+
+        try {
+            HttpResponse<String> response = websiteAPI.send(request, HttpResponse.BodyHandlers.ofString());
+            return isErrorResponse(response.body());
+        } catch (IOException | InterruptedException e) {
+            return false;
+        }
+
+    }
+
+    public boolean isErrorResponse(String responseBody){
+        Gson gson = new GsonBuilder().create();
+        JsonElement element;
+        element = gson.fromJson(responseBody, JsonElement.class);
+        if(element.getAsJsonObject().getAsJsonPrimitive("Information").getAsString() == null){
+            return false;
+        }
+        return true;
+
     }
 
     private HttpRequest buildRequest(String url){
@@ -81,5 +131,9 @@ public class AlphavantageAPIHandler extends RemoteDataHandler {
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
                 .build();
+    }
+
+    public String getAPI_KEY() {
+        return API_KEY;
     }
 }

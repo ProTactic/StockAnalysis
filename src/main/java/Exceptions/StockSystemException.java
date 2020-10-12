@@ -7,12 +7,15 @@ public class StockSystemException extends Exception {
     }
 
     public enum SystemExceptionType{
-        NOT_INITIALIZED_API_KEY;
+        NOT_INITIALIZED_API_KEY,
+        NOT_VALID_API_KEY;
+
         protected static String messageOfType(SystemExceptionType type){
             if(type == NOT_INITIALIZED_API_KEY){
                 return "API key has not been initialized";
+            } else{
+                return "API key is not valid";
             }
-            return "";
         }
     }
 }
