@@ -73,14 +73,18 @@ public class StcokSystemManager {
 
     public <E extends CompanyFinancialRecord> List<E> getFinancialStatement(String symbol, Class<E> classType) {
         symbol = symbol.toUpperCase();
+
+        //CompanyOverview symbol is a foreign key in the financial statements
+        if(getCompanyOverview(symbol) == null){
+            return null;
+        };
+
         List<E> records = companyMapper.getFinancialStatement(symbol, classType);
         if(records.isEmpty()){
             records = remoteDataHandler.financialStatement(symbol, classType);
             System.out.println(records);
             if(!records.isEmpty()){
                 companyMapper.save(records);
-            } else {
-                return null;
             }
         }
         return records;
@@ -125,6 +129,7 @@ public class StcokSystemManager {
             if(instance != null){
                 instance.setRemoteDataHandler(remoteDataHandler);
             }
+            return true;
         }
         return false;
     }

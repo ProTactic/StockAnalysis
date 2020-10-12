@@ -29,12 +29,21 @@ public class SystemController {
 
     public CompanyOverviewDTO getCompanyOverview(String symbol){
         CompanyOverviewRecord cor = systemManager.getCompanyOverview(symbol);
+
+        if(cor == null){
+            return null;
+        }
+
         return buildFromCompanyOverviewRecord(cor);
     }
 
     public List<IncomeStatementDTO> getLastIncomeStatements(String symbol){
         List<IncomeStatementRecord> incomeStatements = systemManager.getFinancialStatement(symbol, IncomeStatementRecord.class);
         List<IncomeStatementDTO> incomeStatementDTOS = new ArrayList<>();
+
+        if(incomeStatements == null){
+            return null;
+        }
 
         for (IncomeStatementRecord incomeStatementRecord : incomeStatements) {
             incomeStatementDTOS.add(buildFromIncomeStatementRecord(symbol, incomeStatementRecord));
@@ -47,6 +56,10 @@ public class SystemController {
         List<BalanceSheetRecord> balanceSheets = systemManager.getFinancialStatement(symbol, BalanceSheetRecord.class);
         List<BalanceSheetDTO> balanceSheetDTOS = new ArrayList<>();
 
+        if(balanceSheets == null){
+            return null;
+        }
+
         for (BalanceSheetRecord balanceSheetRecord : balanceSheets) {
             balanceSheetDTOS.add(buildFromBalanceSheetRecord(symbol, balanceSheetRecord));
         }
@@ -57,6 +70,10 @@ public class SystemController {
     public List<CashFlowDTO> getLastCashFlows(String symbol){
         List<CashFlowRecord> cashFlowRecords = systemManager.getFinancialStatement(symbol, CashFlowRecord.class);
         List<CashFlowDTO> cashFlowDTOS = new ArrayList<>();
+
+        if(cashFlowRecords == null){
+            return null;
+        }
 
         for (CashFlowRecord cashFlowRecord : cashFlowRecords) {
             cashFlowDTOS.add(buildFromCashFlowRecord(symbol, cashFlowRecord));
@@ -70,7 +87,9 @@ public class SystemController {
 
     private static CompanyOverviewDTO buildFromCompanyOverviewRecord(CompanyOverviewRecord cor){
         return new CompanyOverviewDTO(cor.getSymbol(), cor.getName(), cor.getExchange(), cor.getCurrency(),
-                                    cor.getCountry(), cor.getSector());
+                                    cor.getCountry(), cor.getSector(), cor.getMarketCapitalization(),
+                                    cor.getPERatio(), cor.getBookValue(), cor.getPriceToBookRatio(),
+                                    cor.getSharesOutstanding());
     }
 
     private static IncomeStatementDTO buildFromIncomeStatementRecord(String symbol, IncomeStatementRecord incomeStatement){
