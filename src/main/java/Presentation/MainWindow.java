@@ -2,6 +2,7 @@ package Presentation;
 
 import Exceptions.StockSystemException;
 import System.SystemInterface.*;
+import com.sun.istack.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -50,12 +51,10 @@ public class MainWindow extends JFrame {
     private final int COMBO_BOX_CASH_FLOW_INDEX = 2;
     private JComboBox<String> FinancialComboBox;
 
-    public MainWindow(){
+    public MainWindow(@NotNull SystemController systemController){
         super("Stock analysis");
 
-        try {
-            systemController = SystemController.getInstance();
-        } catch (StockSystemException e) {}
+        this.systemController = systemController;
 
         initializeWindow();
         setListeners();
