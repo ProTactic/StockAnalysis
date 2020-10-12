@@ -5,23 +5,23 @@ import System.Records.BalanceSheetRecord;
 import System.Records.CashFlowRecord;
 import System.Records.CompanyOverviewRecord;
 import System.Records.IncomeStatementRecord;
-import System.StcokSystemManager;
+import System.StockSystemManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SystemController {
+public class SystemController implements ISystemController {
     private static SystemController instance;
-    private StcokSystemManager systemManager;
+    private StockSystemManager systemManager;
 
-    SystemController(StcokSystemManager systemManager) {
+    SystemController(StockSystemManager systemManager) {
             this.systemManager = systemManager;
 
     }
 
     public static SystemController getInstance() throws StockSystemException {
         if(instance == null){
-            StcokSystemManager systemManager = StcokSystemManager.getInstance();
+            StockSystemManager systemManager = StockSystemManager.getInstance();
             instance = new SystemController(systemManager);
         }
         return instance;

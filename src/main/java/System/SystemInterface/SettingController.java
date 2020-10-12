@@ -1,9 +1,9 @@
 package System.SystemInterface;
 
-import System.StcokSystemManager;
+import System.StockSystemManager;
 
 
-public class SettingController {
+public class SettingController implements ISettingController {
 
     private static SettingController instance;
 
@@ -18,9 +18,8 @@ public class SettingController {
         return instance;
     }
 
-
     public boolean saveOrUpdateAPIKey(APIKeySupplier keySupplier, String key){
-        return StcokSystemManager.saveOrUpdateAPIKey(keySupplier, key);
+        return StockSystemManager.saveOrUpdateAPIKey(keySupplier, key);
     }
 }
 
