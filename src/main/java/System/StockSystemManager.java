@@ -10,9 +10,9 @@ import Exceptions.StockSystemException;
 
 import java.util.List;
 
-public class StcokSystemManager {
+public class StockSystemManager {
 
-    private static StcokSystemManager instance;
+    private static StockSystemManager instance;
 
     private RemoteDataHandler remoteDataHandler;
     private CompanyMapper companyMapper;
@@ -22,14 +22,14 @@ public class StcokSystemManager {
     /*********** Initialize *********/
     /********************************/
 
-    StcokSystemManager() {
+    StockSystemManager() {
         companyMapper = new CompanyMapper();
         apiKeyMapper = APIKeyMapper.getInstance();
     }
 
-    public static StcokSystemManager getInstance() throws StockSystemException {
+    public static StockSystemManager getInstance() throws StockSystemException {
         if(instance == null){
-            instance = new StcokSystemManager();
+            instance = new StockSystemManager();
         }
 
         initialize(instance);
@@ -37,7 +37,7 @@ public class StcokSystemManager {
         return instance;
     }
 
-    private static void initialize(StcokSystemManager instance) throws StockSystemException {
+    private static void initialize(StockSystemManager instance) throws StockSystemException {
         APIKeyMapper keyMapper = instance.getApiKeyMapper();
         APIKey apiKey = keyMapper.findById(APIKeySupplier.ALPHA_ADVANTAGE.name());
         if(apiKey == null){
@@ -73,14 +73,18 @@ public class StcokSystemManager {
 
     public <E extends CompanyFinancialRecord> List<E> getFinancialStatement(String symbol, Class<E> classType) {
         symbol = symbol.toUpperCase();
+
+        //CompanyOverview symbol is a foreign key in the financial statements
+        if(getCompanyOverview(symbol) == null){
+            return null;
+        };
+
         List<E> records = companyMapper.getFinancialStatement(symbol, classType);
         if(records.isEmpty()){
             records = remoteDataHandler.financialStatement(symbol, classType);
             System.out.println(records);
             if(!records.isEmpty()){
                 companyMapper.save(records);
-            } else {
-                return null;
             }
         }
         return records;
@@ -110,7 +114,7 @@ public class StcokSystemManager {
      * Save or update an api key
      * @param keySupplier the api supplier
      * @param key api key
-     * @return true if the key was updated or saved otherwise return false for invalid key
+     * @return {@code true} if the key was updated or saved otherwise return false for invalid key
      */
     public static boolean saveOrUpdateAPIKey(APIKeySupplier keySupplier, String key){
         if(keySupplier == APIKeySupplier.ALPHA_ADVANTAGE){

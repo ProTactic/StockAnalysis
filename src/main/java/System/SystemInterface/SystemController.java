@@ -5,23 +5,23 @@ import System.Records.BalanceSheetRecord;
 import System.Records.CashFlowRecord;
 import System.Records.CompanyOverviewRecord;
 import System.Records.IncomeStatementRecord;
-import System.StcokSystemManager;
+import System.StockSystemManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SystemController {
+public class SystemController implements ISystemController {
     private static SystemController instance;
-    private StcokSystemManager systemManager;
+    private StockSystemManager systemManager;
 
-    SystemController(StcokSystemManager systemManager) {
+    SystemController(StockSystemManager systemManager) {
             this.systemManager = systemManager;
 
     }
 
     public static SystemController getInstance() throws StockSystemException {
         if(instance == null){
-            StcokSystemManager systemManager = StcokSystemManager.getInstance();
+            StockSystemManager systemManager = StockSystemManager.getInstance();
             instance = new SystemController(systemManager);
         }
         return instance;
@@ -29,12 +29,21 @@ public class SystemController {
 
     public CompanyOverviewDTO getCompanyOverview(String symbol){
         CompanyOverviewRecord cor = systemManager.getCompanyOverview(symbol);
+
+        if(cor == null){
+            return null;
+        }
+
         return buildFromCompanyOverviewRecord(cor);
     }
 
     public List<IncomeStatementDTO> getLastIncomeStatements(String symbol){
         List<IncomeStatementRecord> incomeStatements = systemManager.getFinancialStatement(symbol, IncomeStatementRecord.class);
         List<IncomeStatementDTO> incomeStatementDTOS = new ArrayList<>();
+
+        if(incomeStatements == null){
+            return null;
+        }
 
         for (IncomeStatementRecord incomeStatementRecord : incomeStatements) {
             incomeStatementDTOS.add(buildFromIncomeStatementRecord(symbol, incomeStatementRecord));
@@ -47,6 +56,10 @@ public class SystemController {
         List<BalanceSheetRecord> balanceSheets = systemManager.getFinancialStatement(symbol, BalanceSheetRecord.class);
         List<BalanceSheetDTO> balanceSheetDTOS = new ArrayList<>();
 
+        if(balanceSheets == null){
+            return null;
+        }
+
         for (BalanceSheetRecord balanceSheetRecord : balanceSheets) {
             balanceSheetDTOS.add(buildFromBalanceSheetRecord(symbol, balanceSheetRecord));
         }
@@ -57,6 +70,10 @@ public class SystemController {
     public List<CashFlowDTO> getLastCashFlows(String symbol){
         List<CashFlowRecord> cashFlowRecords = systemManager.getFinancialStatement(symbol, CashFlowRecord.class);
         List<CashFlowDTO> cashFlowDTOS = new ArrayList<>();
+
+        if(cashFlowRecords == null){
+            return null;
+        }
 
         for (CashFlowRecord cashFlowRecord : cashFlowRecords) {
             cashFlowDTOS.add(buildFromCashFlowRecord(symbol, cashFlowRecord));
@@ -70,7 +87,9 @@ public class SystemController {
 
     private static CompanyOverviewDTO buildFromCompanyOverviewRecord(CompanyOverviewRecord cor){
         return new CompanyOverviewDTO(cor.getSymbol(), cor.getName(), cor.getExchange(), cor.getCurrency(),
-                                    cor.getCountry(), cor.getSector());
+                                    cor.getCountry(), cor.getSector(), cor.getMarketCapitalization(),
+                                    cor.getPERatio(), cor.getBookValue(), cor.getPriceToBookRatio(),
+                                    cor.getSharesOutstanding());
     }
 
     private static IncomeStatementDTO buildFromIncomeStatementRecord(String symbol, IncomeStatementRecord incomeStatement){
