@@ -144,7 +144,7 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="7f564" class="javax.swing.JTable" binding="incomeStatementTable">
+                      <component id="7f564" class="javax.swing.JTable" binding="financialTable">
                         <constraints/>
                         <properties>
                           <autoCreateRowSorter value="false"/>

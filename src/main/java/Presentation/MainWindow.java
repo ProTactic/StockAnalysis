@@ -18,7 +18,7 @@ import java.util.Vector;
 
 public class MainWindow extends JFrame {
 
-    private SystemController systemController;
+    private ISystemController systemController;
 
     private JPanel mainPanel;
 
@@ -48,7 +48,7 @@ public class MainWindow extends JFrame {
     private JLabel coSector;
 
     /*** Financial tab ***/
-    private JTable incomeStatementTable;
+    private JTable financialTable;
     private JPanel Financial;
     private String[] comboOptions = {"Income statement", "Balance Sheet", "Cash Flow"};
     private final int COMBO_BOX_INCOME_STATEMENT_INDEX = 0;
@@ -56,7 +56,7 @@ public class MainWindow extends JFrame {
     private final int COMBO_BOX_CASH_FLOW_INDEX = 2;
     private JComboBox<String> FinancialComboBox;
 
-    public MainWindow(@NotNull SystemController systemController){
+    public MainWindow(@NotNull ISystemController systemController){
         super("Stock analysis");
 
         this.systemController = systemController;
@@ -83,7 +83,7 @@ public class MainWindow extends JFrame {
         menuBar.add(fileMenu);
         this.setJMenuBar(menuBar);
 
-        incomeStatementTable.setRowHeight(50);
+        financialTable.setRowHeight(50);
 
         for (String option: comboOptions) {
             FinancialComboBox.addItem(option);
@@ -133,11 +133,21 @@ public class MainWindow extends JFrame {
 
     private void updateCompanyOverviewTabData(String symbol){
         CompanyOverviewDTO companyOverview = systemController.getCompanyOverview(symbol);
+        if(companyOverview == null){
+            messageBox_SymbolDoNotExists(symbol);
+            return;
+        }
+
         coName.setText(String.format("%s (%s : %s)", companyOverview.name,
                 companyOverview.exchange, symbol.toUpperCase()));
         coCountry.setText("Country : " + companyOverview.country);
         coCurrency.setText("Currency : " + companyOverview.currency);
         coSector.setText("Sector : " + companyOverview.sector);
+    }
+
+    private void cleanCompanyOverviewTab(){
+        coName.setText(""); coCountry.setText("");
+        coCurrency.setText(""); coSector.setText("");
     }
 
     private void updateFinancialTab(String symbol) {
@@ -165,6 +175,12 @@ public class MainWindow extends JFrame {
             default:
                 throw new IllegalStateException("Unexpected value: " + FinancialComboBox.getSelectedIndex());
         }
+
+        if(financialDTOS == null){
+            messageBox_SymbolDoNotExists(symbol);
+            return;
+        }
+
         dates.add("Date");
         for (FinancialDTO dto: financialDTOS) {
             dates.add(dto.date.toString());
@@ -198,15 +214,28 @@ public class MainWindow extends JFrame {
 
     private DefaultTableModel cleanAndInitializeFinancialTable(Vector<String> dates, Field[] fields) {
         DefaultTableModel defaultTableModel = new DefaultTableModel(dates, fields.length - 2);
-        incomeStatementTable.setModel(defaultTableModel);
-        incomeStatementTable.getColumnModel().getColumn(0).setCellRenderer(new ColumnColorRenderer(Color.getHSBColor(0,0, (float) 0.94), Color.BLACK));
+        financialTable.setModel(defaultTableModel);
+        financialTable.getColumnModel().getColumn(0).setCellRenderer(new ColumnColorRenderer(Color.getHSBColor(0,0, (float) 0.94), Color.BLACK));
         DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
         defaultTableCellRenderer.setHorizontalAlignment(JLabel.CENTER);
         defaultTableCellRenderer.setFont(new Font(Font.SERIF, Font.BOLD, 24));
-        for(int i=1; i < incomeStatementTable.getColumnCount(); i++){
-            incomeStatementTable.getColumnModel().getColumn(i).setCellRenderer(defaultTableCellRenderer);
+        for(int i = 1; i < financialTable.getColumnCount(); i++){
+            financialTable.getColumnModel().getColumn(i).setCellRenderer(defaultTableCellRenderer);
         }
         return defaultTableModel;
+    }
+
+    private void messageBox_SymbolDoNotExists(@NotNull String symbol){
+        String message = "No such symbol";
+        searchTextField.setText("");
+
+        //clean company overview tab
+        cleanCompanyOverviewTab();
+
+        //clean financial table
+        ((DefaultTableModel) financialTable.getModel()).setRowCount(0);
+
+        JOptionPane.showMessageDialog(null, message + " " + symbol, message, JOptionPane.INFORMATION_MESSAGE);
     }
 
     /*** listeners ***/

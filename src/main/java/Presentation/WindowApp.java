@@ -1,13 +1,15 @@
 package Presentation;
 
 import Exceptions.StockSystemException;
+import System.SystemInterface.ISettingController;
+import System.SystemInterface.ISystemController;
 import System.SystemInterface.SettingController;
 import System.SystemInterface.SystemController;
 
 public class WindowApp {
 
-    private SystemController systemController;
-    private SettingController settingController;
+    private ISystemController systemController;
+    private ISettingController settingController;
 
     public WindowApp() {
         settingController = SettingController.getInstance();

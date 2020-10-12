@@ -1,6 +1,7 @@
 package Presentation;
 
 import System.SystemInterface.APIKeySupplier;
+import System.SystemInterface.ISettingController;
 import System.SystemInterface.SettingController;
 
 import javax.swing.*;
@@ -22,13 +23,13 @@ APIKeySetupDialog extends JDialog {
     private boolean sendKeyCheck = false;
     private Boolean isKeyValid;
 
-    SettingController settingController;
+    private ISettingController settingController;
 
-    public APIKeySetupDialog(SettingController settingController){
+    public APIKeySetupDialog(ISettingController settingController){
         this(settingController, true);
     }
 
-    public APIKeySetupDialog(SettingController settingController, Boolean isKeyValid) {
+    public APIKeySetupDialog(ISettingController settingController, Boolean isKeyValid) {
 
         this.settingController = settingController;
         this.isKeyValid = isKeyValid;
@@ -82,6 +83,9 @@ APIKeySetupDialog extends JDialog {
         if (!sendKeyCheck){
             sendKeyCheck = true;
             isKeyValid = false;
+
+            Message.setText("Validating key");
+            Message.setForeground(Color.BLACK);
 
             new Thread(() -> {
                 if (settingController.saveOrUpdateAPIKey(keySupplierHashMap.get(APIKeySupplierComboBox.getSelectedItem().toString()),
