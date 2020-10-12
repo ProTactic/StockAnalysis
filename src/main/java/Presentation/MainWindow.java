@@ -33,6 +33,7 @@ public class MainWindow extends JFrame {
     private JLabel searchLabel;
     private JButton searchButton;
     private JPanel searchPanel;
+    private String previousSearch;
 
     /*** data panel ***/
     private JPanel dataPanel;
@@ -41,20 +42,23 @@ public class MainWindow extends JFrame {
     private final int FINANCIAL_TAB = 1;
     private JPanel companyOverviewTab;
 
+    /*** ratio list ***/
+    private JList<String> ratioList;
+
     /*** company overview tab ***/
     private JLabel coName;
     private JLabel coCountry;
     private JLabel coCurrency;
     private JLabel coSector;
 
-    /*** Financial tab ***/
+    /*** financial tab ***/
     private JTable financialTable;
-    private JPanel Financial;
+    private JPanel financial;
     private String[] comboOptions = {"Income statement", "Balance Sheet", "Cash Flow"};
     private final int COMBO_BOX_INCOME_STATEMENT_INDEX = 0;
     private final int COMBO_BOX_BALANCE_SHEET_INDEX = 1;
     private final int COMBO_BOX_CASH_FLOW_INDEX = 2;
-    private JComboBox<String> FinancialComboBox;
+    private JComboBox<String> financialComboBox;
 
     public MainWindow(@NotNull ISystemController systemController){
         super("Stock analysis");
@@ -83,10 +87,16 @@ public class MainWindow extends JFrame {
         menuBar.add(fileMenu);
         this.setJMenuBar(menuBar);
 
+        previousSearch = "";
+
         financialTable.setRowHeight(50);
 
+        //ratios list
+        ratioList.setFixedCellHeight(50);
+        ratioList.setCellRenderer(getRenderer());
+
         for (String option: comboOptions) {
-            FinancialComboBox.addItem(option);
+            financialComboBox.addItem(option);
         }
 
         this.setLocationRelativeTo(null);
@@ -96,7 +106,9 @@ public class MainWindow extends JFrame {
 
     private void setListeners(){
         //Search Button
-        searchButton.addActionListener((ActionEvent e) -> { updateTabbedData(); });
+        searchButton.addActionListener((ActionEvent e) -> {
+            updateDataSearchBottun();
+        });
 
         //Search text field
         searchTextField.addKeyListener(new TextFieldKeyListener());
@@ -105,7 +117,7 @@ public class MainWindow extends JFrame {
             updateTabbedData();
         });
 
-        FinancialComboBox.addItemListener((ItemEvent e) -> {
+        financialComboBox.addItemListener((ItemEvent e) -> {
             if(e.getStateChange() == ItemEvent.SELECTED){
                 String symbol = searchTextField.getText();
                 if(symbol.equals("")){
@@ -118,7 +130,7 @@ public class MainWindow extends JFrame {
     }
 
     private void updateTabbedData(){
-        String symbol = searchTextField.getText();
+        String symbol = previousSearch;
         if(symbol.equals("")){
             return;
         }
@@ -134,7 +146,7 @@ public class MainWindow extends JFrame {
     private void updateCompanyOverviewTabData(String symbol){
         CompanyOverviewDTO companyOverview = systemController.getCompanyOverview(symbol);
         if(companyOverview == null){
-            messageBox_SymbolDoNotExists(symbol);
+            messageBox_SymbolDoNotExistsWithCleanData(symbol);
             return;
         }
 
@@ -143,11 +155,21 @@ public class MainWindow extends JFrame {
         coCountry.setText("Country : " + companyOverview.country);
         coCurrency.setText("Currency : " + companyOverview.currency);
         coSector.setText("Sector : " + companyOverview.sector);
+
+        //ratio list
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        listModel.addElement("market cap: "+ companyOverview.marketCapitalization);
+        listModel.addElement("PE ratio: "+ companyOverview.PERatio);
+        listModel.addElement("book value: "+ companyOverview.bookValue);
+        listModel.addElement("PB ratio: "+ companyOverview.priceToBookRatio);
+        listModel.addElement("shares outstanding: "+ companyOverview.sharesOutstanding);
+        ratioList.setModel(listModel);
     }
 
     private void cleanCompanyOverviewTab(){
         coName.setText(""); coCountry.setText("");
         coCurrency.setText(""); coSector.setText("");
+        ((DefaultListModel<String>)ratioList.getModel()).clear();
     }
 
     private void updateFinancialTab(String symbol) {
@@ -155,7 +177,7 @@ public class MainWindow extends JFrame {
         Vector<String> dates = new Vector<>();
         Field[] fields = null;
 
-        int comboSelectedIndex = FinancialComboBox.getSelectedIndex();
+        int comboSelectedIndex = financialComboBox.getSelectedIndex();
         switch (comboSelectedIndex){
             case COMBO_BOX_INCOME_STATEMENT_INDEX: {
                 financialDTOS = systemController.getLastIncomeStatements(symbol);
@@ -173,11 +195,11 @@ public class MainWindow extends JFrame {
                 break;
             }
             default:
-                throw new IllegalStateException("Unexpected value: " + FinancialComboBox.getSelectedIndex());
+                throw new IllegalStateException("Unexpected value: " + financialComboBox.getSelectedIndex());
         }
 
         if(financialDTOS == null){
-            messageBox_SymbolDoNotExists(symbol);
+            messageBox_SymbolDoNotExistsWithCleanData(symbol);
             return;
         }
 
@@ -225,9 +247,10 @@ public class MainWindow extends JFrame {
         return defaultTableModel;
     }
 
-    private void messageBox_SymbolDoNotExists(@NotNull String symbol){
+    private void messageBox_SymbolDoNotExistsWithCleanData(@NotNull String symbol){
         String message = "No such symbol";
         searchTextField.setText("");
+        previousSearch = "";
 
         //clean company overview tab
         cleanCompanyOverviewTab();
@@ -253,12 +276,32 @@ public class MainWindow extends JFrame {
         @Override
         public void keyReleased(KeyEvent e) {
             if(e.getExtendedKeyCode() == KeyEvent.VK_ENTER){
-                updateTabbedData();
+                updateDataSearchBottun();
             }
         }
     }
 
+    private void updateDataSearchBottun() {
+        previousSearch = searchTextField.getText();
+        updateTabbedData();
+    }
+
     /*** table column models ***/
+
+    private ListCellRenderer<? super String> getRenderer() {
+        return new DefaultListCellRenderer(){
+            @Override
+            public Component getListCellRendererComponent(JList<?> list,
+                                                          Object value, int index, boolean isSelected,
+                                                          boolean cellHasFocus) {
+                JLabel listCellRendererComponent = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,cellHasFocus);
+                listCellRendererComponent.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0,Color.BLACK));
+                return listCellRendererComponent;
+            }
+        };
+    }
+
+
     class ColumnColorRenderer extends DefaultTableCellRenderer {
         Color backgroundColor, foregroundColor;
         public ColumnColorRenderer(Color backgroundColor, Color foregroundColor) {

@@ -2,7 +2,6 @@ package Presentation;
 
 import System.SystemInterface.APIKeySupplier;
 import System.SystemInterface.ISettingController;
-import System.SystemInterface.SettingController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +15,7 @@ APIKeySetupDialog extends JDialog {
     private JButton buttonCancel;
     private JPanel buttonPanel;
     private JTextField keyTextField;
-    private JComboBox APIKeySupplierComboBox;
+    private JComboBox<String> APIKeySupplierComboBox;
     private JLabel Message;
     private LinkedHashMap<String, APIKeySupplier> keySupplierHashMap;
 
@@ -91,7 +90,7 @@ APIKeySetupDialog extends JDialog {
                 if (settingController.saveOrUpdateAPIKey(keySupplierHashMap.get(APIKeySupplierComboBox.getSelectedItem().toString()),
                         keyTextField.getText())) {
                     isKeyValid = true;
-                    Message.setText("Key is valid and saved");
+                    Message.setText("The key is valid and has been saved");
                     Message.setForeground(Color.GREEN);
 
                 } else {

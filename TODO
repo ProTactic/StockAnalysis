@@ -6,4 +6,3 @@ DAL.GeneralMapper
 Refactor the MainWindow code
 Create method to split the name of each field by the capital letter
 
-NULL return if the symbol doesnt exist
