@@ -119,7 +119,7 @@ public class AlphavantageAPIHandler extends RemoteDataHandler {
         Gson gson = new GsonBuilder().create();
         JsonElement element;
         element = gson.fromJson(responseBody, JsonElement.class);
-        if(element.getAsJsonObject().getAsJsonPrimitive("Information").getAsString() == null){
+        if(element.getAsJsonObject().getAsJsonPrimitive("Information") == null){
             return false;
         }
         return true;
