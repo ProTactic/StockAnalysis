@@ -48,7 +48,7 @@ public class MainWindow extends JFrame {
     private final int COMBO_BOX_INCOME_STATEMENT_INDEX = 0;
     private final int COMBO_BOX_BALANCE_SHEET_INDEX = 1;
     private final int COMBO_BOX_CASH_FLOW_INDEX = 2;
-    private JComboBox<String> comboBox1;
+    private JComboBox<String> FinancialComboBox;
 
     public MainWindow(){
         super("Stock analysis");
@@ -67,7 +67,7 @@ public class MainWindow extends JFrame {
         this.setContentPane(mainPanel);
 
         for (String option: comboOptions) {
-            comboBox1.addItem(option);
+            FinancialComboBox.addItem(option);
         }
 
         this.setVisible(true);
@@ -85,7 +85,7 @@ public class MainWindow extends JFrame {
             updateTabbedData();
         });
 
-        comboBox1.addItemListener((ItemEvent e) -> {
+        FinancialComboBox.addItemListener((ItemEvent e) -> {
             if(e.getStateChange() == ItemEvent.SELECTED){
                 String symbol = searchTextField.getText();
                 if(symbol.equals("")){
@@ -125,7 +125,7 @@ public class MainWindow extends JFrame {
         Vector<String> dates = new Vector<>();
         Field[] fields = null;
 
-        int comboSelectedIndex = comboBox1.getSelectedIndex();
+        int comboSelectedIndex = FinancialComboBox.getSelectedIndex();
         switch (comboSelectedIndex){
             case COMBO_BOX_INCOME_STATEMENT_INDEX: {
                 financialDTOS = systemController.getLastIncomeStatements(symbol);
@@ -143,7 +143,7 @@ public class MainWindow extends JFrame {
                 break;
             }
             default:
-                throw new IllegalStateException("Unexpected value: " + comboBox1.getSelectedIndex());
+                throw new IllegalStateException("Unexpected value: " + FinancialComboBox.getSelectedIndex());
         }
         dates.add("Date");
         for (FinancialDTO dto: financialDTOS) {
