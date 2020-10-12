@@ -1,6 +1,5 @@
 package Presentation;
 
-import Exceptions.StockSystemException;
 import System.SystemInterface.*;
 import com.sun.istack.NotNull;
 
@@ -22,6 +21,12 @@ public class MainWindow extends JFrame {
     private SystemController systemController;
 
     private JPanel mainPanel;
+
+    /*** menu bar ***/
+    private JMenuBar menuBar;
+    private JMenu fileMenu;
+    private JMenuItem fileMenu_UpdateAPIKey;
+
 
     /*** search panel ***/
     private JTextField searchTextField;
@@ -62,13 +67,29 @@ public class MainWindow extends JFrame {
 
     private void initializeWindow(){
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(720,640);
+        this.setSize(1280,960);
         this.setContentPane(mainPanel);
+
+        //menu bar
+        menuBar = new JMenuBar();
+        fileMenu = new JMenu("File");
+        fileMenu_UpdateAPIKey = new JMenuItem("update api key");
+        fileMenu_UpdateAPIKey.addActionListener((ActionEvent e) -> {
+            SwingUtilities.invokeLater(() ->{
+                APIKeySetupDialog apiKeySetupDialog = new APIKeySetupDialog(SettingController.getInstance());
+            });
+        });
+        fileMenu.add(fileMenu_UpdateAPIKey);
+        menuBar.add(fileMenu);
+        this.setJMenuBar(menuBar);
+
+        incomeStatementTable.setRowHeight(50);
 
         for (String option: comboOptions) {
             FinancialComboBox.addItem(option);
         }
 
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
         this.toFront();
     }

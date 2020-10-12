@@ -4,8 +4,6 @@ import Exceptions.StockSystemException;
 import System.SystemInterface.SettingController;
 import System.SystemInterface.SystemController;
 
-import javax.swing.*;
-
 public class WindowApp {
 
     private SystemController systemController;
@@ -19,7 +17,13 @@ public class WindowApp {
        try {
            runMainWindow();
         } catch (StockSystemException e) {
-           APIKeySetup apiKeySetup = new APIKeySetup(settingController);
+           APIKeySetupDialog apiKeySetupDialog = new APIKeySetupDialog(settingController);
+           if(apiKeySetupDialog.getKeyValid()){
+               try {
+                   runMainWindow();
+               } catch (StockSystemException ignored) {
+               }
+           }
 
        }
     }

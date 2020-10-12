@@ -125,6 +125,7 @@ public class StcokSystemManager {
             if(instance != null){
                 instance.setRemoteDataHandler(remoteDataHandler);
             }
+            return true;
         }
         return false;
     }

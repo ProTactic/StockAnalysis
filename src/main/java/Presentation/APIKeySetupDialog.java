@@ -4,11 +4,12 @@ import System.SystemInterface.APIKeySupplier;
 import System.SystemInterface.SettingController;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.LinkedHashMap;
 
 public class
-APIKeySetup extends JDialog {
+APIKeySetupDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -19,12 +20,18 @@ APIKeySetup extends JDialog {
     private LinkedHashMap<String, APIKeySupplier> keySupplierHashMap;
 
     private boolean sendKeyCheck = false;
+    private Boolean isKeyValid;
 
     SettingController settingController;
 
-    public APIKeySetup(SettingController settingController) {
+    public APIKeySetupDialog(SettingController settingController){
+        this(settingController, true);
+    }
+
+    public APIKeySetupDialog(SettingController settingController, Boolean isKeyValid) {
 
         this.settingController = settingController;
+        this.isKeyValid = isKeyValid;
 
         setContentPane(contentPane);
         setModal(true);
@@ -36,21 +43,6 @@ APIKeySetup extends JDialog {
             APIKeySupplierComboBox.addItem(keyName);
             keySupplierHashMap.put(keyName, keySupplier);
         }
-
-        /*buttonOK.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) { }
-            @Override
-            public void mousePressed(MouseEvent e) { }
-            @Override
-            public void mouseEntered(MouseEvent e) { }
-            @Override
-            public void mouseExited(MouseEvent e) { }
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                onOK();
-            }
-        });*/
 
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -89,18 +81,29 @@ APIKeySetup extends JDialog {
 
         if (!sendKeyCheck){
             sendKeyCheck = true;
+            isKeyValid = false;
+
             new Thread(() -> {
                 if (settingController.saveOrUpdateAPIKey(keySupplierHashMap.get(APIKeySupplierComboBox.getSelectedItem().toString()),
                         keyTextField.getText())) {
-                    dispose();
+                    isKeyValid = true;
+                    Message.setText("Key is valid and saved");
+                    Message.setForeground(Color.GREEN);
+
+                } else {
+                    Message.setText("Not a valid key");
+                    Message.setForeground(Color.RED);
+                    sendKeyCheck = false;
                 }
-                Message.setText("Not a valid key");
-                sendKeyCheck = false;
             }).start();
         }
     }
 
     private void onCancel() {
-        System.exit(0);
+        dispose();
+    }
+
+    public Boolean getKeyValid() {
+        return isKeyValid;
     }
 }
