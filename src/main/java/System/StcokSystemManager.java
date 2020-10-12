@@ -44,7 +44,11 @@ public class StcokSystemManager {
             throw new StockSystemException(StockSystemException.SystemExceptionType.NOT_INITIALIZED_API_KEY);
         }
 
-        RemoteDataHandler remoteDataHandler = new AlphavantageAPIHandler(apiKey.getKey());
+        RemoteDataHandler remoteDataHandler = AlphavantageAPIHandler.buildAlphavantageAPIHandler(apiKey.getKey());
+        if(remoteDataHandler == null){
+            throw new StockSystemException(StockSystemException.SystemExceptionType.NOT_VALID_API_KEY);
+        }
+
         instance.setRemoteDataHandler(remoteDataHandler);
     }
 
@@ -59,6 +63,8 @@ public class StcokSystemManager {
             record = remoteDataHandler.companyOverview(symbol);
             if(record != null){
                 companyMapper.save(record);
+            } else {
+                return null;
             }
         }
         companyMapper.update(record);
@@ -73,6 +79,8 @@ public class StcokSystemManager {
             System.out.println(records);
             if(!records.isEmpty()){
                 companyMapper.save(records);
+            } else {
+                return null;
             }
         }
         return records;
@@ -92,5 +100,32 @@ public class StcokSystemManager {
 
     private APIKeyMapper getApiKeyMapper() {
         return apiKeyMapper;
+    }
+
+    /********************************/
+    /************ Settings **********/
+    /********************************/
+
+    /**
+     * Save or update an api key
+     * @param keySupplier the api supplier
+     * @param key api key
+     * @return true if the key was updated or saved otherwise return false for invalid key
+     */
+    public static boolean saveOrUpdateAPIKey(APIKeySupplier keySupplier, String key){
+        if(keySupplier == APIKeySupplier.ALPHA_ADVANTAGE){
+            AlphavantageAPIHandler remoteDataHandler = AlphavantageAPIHandler.buildAlphavantageAPIHandler(key);
+            if(remoteDataHandler == null){
+                return false;
+            }
+
+            APIKeyMapper.getInstance().saveOrUpdate(new APIKey(keySupplier.name(), key));
+            // update the existing remote if its the same and there is an instance
+            // currently the same remote
+            if(instance != null){
+                instance.setRemoteDataHandler(remoteDataHandler);
+            }
+        }
+        return false;
     }
 }

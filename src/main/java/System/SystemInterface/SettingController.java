@@ -1,14 +1,14 @@
 package System.SystemInterface;
 
-import System.SystemSettingManager;
+import System.StcokSystemManager;
+
 
 public class SettingController {
 
     private static SettingController instance;
-    private SystemSettingManager systemSettingManager;
 
     SettingController() {
-        this.systemSettingManager = new SystemSettingManager();
+
     }
 
     public static SettingController getInstance() {
@@ -19,8 +19,8 @@ public class SettingController {
     }
 
 
-    public void saveOrUpdateAPIKey(APIKeySupplier keySupplier, String key){
-        systemSettingManager.saveOrUpdateAPIKey(keySupplier.name(), key);
+    public boolean saveOrUpdateAPIKey(APIKeySupplier keySupplier, String key){
+        return StcokSystemManager.saveOrUpdateAPIKey(keySupplier, key);
     }
 }
 
