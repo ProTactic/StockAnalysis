@@ -108,7 +108,7 @@ public class AlphavantageAPIHandler extends RemoteDataHandler {
 
         try {
             HttpResponse<String> response = websiteAPI.send(request, HttpResponse.BodyHandlers.ofString());
-            return isErrorResponse(response.body());
+            return !isErrorResponse(response.body());
         } catch (IOException | InterruptedException e) {
             return false;
         }
