@@ -68,7 +68,6 @@ public class AlphavantageRecordBuilder implements RecordBuilder {
                 cRecord.setFinancingCashFlow(jsonStatement.getAsJsonPrimitive("cashflowFromFinancing").getAsLong());
                 cRecord.setInvestmentCashFlow(jsonStatement.getAsJsonPrimitive("cashflowFromInvestment").getAsLong());
                 cRecord.updateInferredVariables();
-                System.out.println("\n\n" + cRecord);
                 return (E)cRecord;
             } catch (Exception ignored) { }
         }
