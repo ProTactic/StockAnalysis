@@ -221,7 +221,7 @@ public class MainWindow extends JFrame {
                 continue;
             }
 
-            defaultTableModel.setValueAt(field.getName(), atRow, 0);
+            defaultTableModel.setValueAt(FinancialDTO.varNameToPresentableString(field.getName()), atRow, 0);
             for (FinancialDTO dto: financialDTOS) {
                 try {
                     defaultTableModel.setValueAt(field.get(dto).toString(), atRow, atColumn);

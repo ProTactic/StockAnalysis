@@ -192,7 +192,7 @@
                         <constraints/>
                         <properties>
                           <autoCreateRowSorter value="false"/>
-                          <enabled value="true"/>
+                          <enabled value="false"/>
                           <fillsViewportHeight value="false"/>
                           <font name="Segoe UI Semilight" size="16"/>
                           <showHorizontalLines value="true"/>
