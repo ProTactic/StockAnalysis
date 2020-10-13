@@ -20,7 +20,7 @@ public class WindowApp {
            runMainWindow();
         } catch (StockSystemException e) {
            APIKeySetupDialog apiKeySetupDialog = new APIKeySetupDialog(settingController);
-           if(apiKeySetupDialog.getKeyValid()){
+           if(apiKeySetupDialog.isVaildKey()){
                try {
                    runMainWindow();
                } catch (StockSystemException ignored) {

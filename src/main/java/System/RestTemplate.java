@@ -1,18 +1,19 @@
 package System;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * This class role is to make it more easy to build rest template
  */
 public class RestTemplate {
-    private final Map<String, String> restKeysAndValues;
+    private final LinkedHashMap<String, String> restKeysAndValues;
     private String url;
 
-    RestTemplate(String url){
+    public RestTemplate(String url){
         this.url = url;
-        restKeysAndValues = new HashMap<>();
+        restKeysAndValues = new LinkedHashMap<>();
     }
 
     /**
@@ -21,7 +22,7 @@ public class RestTemplate {
      * @param value The value
      * @return The same instance for compound adding
      */
-    RestTemplate addKeyValue(String key, String value){
+    public RestTemplate addKeyValue(String key, String value){
         restKeysAndValues.put(key, value);
         return this;
     }

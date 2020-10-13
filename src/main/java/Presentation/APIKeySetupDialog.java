@@ -106,7 +106,7 @@ APIKeySetupDialog extends JDialog {
         dispose();
     }
 
-    public Boolean getKeyValid() {
+    public Boolean isVaildKey() {
         return isKeyValid;
     }
 }
