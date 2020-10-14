@@ -3,6 +3,5 @@ DAL.GeneralMapper
     + Create a way to connect the code batch size and hibernate configuration batch size
       Optimize cash using the level one cash of hibernate with the batch insert
 
-Refactor the MainWindow code
-Create method to split the name of each field by the capital letter
+Make it more thread friendly
 

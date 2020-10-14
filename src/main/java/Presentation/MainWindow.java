@@ -71,7 +71,7 @@ public class MainWindow extends JFrame {
 
     private void initializeWindow(){
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(1280,960);
+        this.setSize(1280,720);
         this.setContentPane(mainPanel);
 
         //menu bar
