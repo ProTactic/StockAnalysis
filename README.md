@@ -1,11 +1,10 @@
 # Stock analysis
 
 The software has currently 2 main goals:  
-1. Present the big numbers and main key ratios each investor should look in company  
-   in order to simplify this selection process.  
+1. Simplify the stock selection process.  
 2. Educate myself on how companies operate both financially and socially.
 
-##Features
+## Features
 
 * Company general information
 * Financial statement:
@@ -14,7 +13,7 @@ The software has currently 2 main goals:
     3. Cash Flow
 * Key ratios
 * Interface which make it easy to add different api providers 
-##Images
+## Images
 
 Company overview
 ![Company overview](./Documents/CompanyOverview.png)

@@ -40,7 +40,7 @@ public class StockSystemManager {
 
     private static void initialize(StockSystemManager instance) throws StockSystemException {
         APIKeyMapper keyMapper = instance.getApiKeyMapper();
-        APIKey apiKey = keyMapper.findById(APIKeySupplier.ALPHA_ADVANTAGE.name());
+        APIKey apiKey = keyMapper.findById(APIKeySupplier.ALPHA_VANTAGE.name());
         if(apiKey == null){
             throw new StockSystemException(StockSystemException.SystemExceptionType.NOT_INITIALIZED_API_KEY);
         }
@@ -121,7 +121,7 @@ public class StockSystemManager {
      * @return {@code true} if the key was updated or saved otherwise return false for invalid key
      */
     public static boolean saveOrUpdateAPIKey(APIKeySupplier keySupplier, String key){
-        if(keySupplier == APIKeySupplier.ALPHA_ADVANTAGE){
+        if(keySupplier == APIKeySupplier.ALPHA_VANTAGE){
             AlphavantageAPIHandler remoteDataHandler = AlphavantageAPIHandler.buildAlphavantageAPIHandler(key);
             if(remoteDataHandler == null){
                 return false;
