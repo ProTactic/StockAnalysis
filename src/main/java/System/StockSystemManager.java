@@ -7,6 +7,7 @@ import System.Records.CompanyFinancialRecord;
 import System.Records.CompanyOverviewRecord;
 import System.SystemInterface.APIKeySupplier;
 import Exceptions.StockSystemException;
+import System.SystemInterface.Result;
 
 import java.util.List;
 
@@ -56,38 +57,39 @@ public class StockSystemManager {
     /************ Business **********/
     /********************************/
 
-    public CompanyOverviewRecord getCompanyOverview(String symbol){
+    public Result<CompanyOverviewRecord> getCompanyOverview(String symbol){
         symbol = symbol.toUpperCase();
         CompanyOverviewRecord record = companyMapper.findById(symbol);
         if(record == null){
-            record = remoteDataHandler.companyOverview(symbol);
-            if(record != null){
-                companyMapper.save(record);
+            Result<CompanyOverviewRecord> recordResult = remoteDataHandler.companyOverview(symbol);
+            if(recordResult.isValid()) {
+                companyMapper.save(recordResult.getEntity());
+                return recordResult;
             } else {
-                return null;
+                return recordResult;
             }
         }
-        companyMapper.update(record);
-        return record;
+        return new Result<>(true, record);
     }
 
-    public <E extends CompanyFinancialRecord> List<E> getFinancialStatement(String symbol, Class<E> classType) {
+    public <E extends CompanyFinancialRecord> Result<List<E>> getFinancialStatement(String symbol, Class<E> classType) {
         symbol = symbol.toUpperCase();
 
         //CompanyOverview symbol is a foreign key in the financial statements
-        if(getCompanyOverview(symbol) == null){
-            return null;
-        };
+        Result<CompanyOverviewRecord> corResult = getCompanyOverview(symbol);
+        if(corResult.isNotValid()){
+            return new Result<>(false, null, corResult.getMessage());
+        }
 
         List<E> records = companyMapper.getFinancialStatement(symbol, classType);
         if(records.isEmpty()){
-            records = remoteDataHandler.financialStatement(symbol, classType);
-            System.out.println(records);
-            if(!records.isEmpty()){
-                companyMapper.save(records);
+            Result<List<E>> recordsResult = remoteDataHandler.financialStatement(symbol, classType);
+            if(recordsResult.isValid()){
+                companyMapper.save(recordsResult.getEntity());
+                return new Result<>(true, recordsResult.getEntity());
             }
         }
-        return records;
+        return new Result<>(true, records);
     }
 
     public void setRemoteDataHandler(RemoteDataHandler remoteDataHandler) {

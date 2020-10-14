@@ -144,12 +144,13 @@ public class MainWindow extends JFrame {
     }
 
     private void updateCompanyOverviewTabData(String symbol){
-        CompanyOverviewDTO companyOverview = systemController.getCompanyOverview(symbol);
-        if(companyOverview == null){
-            messageBox_SymbolDoNotExistsWithCleanData(symbol);
+        Result<CompanyOverviewDTO> companyOverviewRecord = systemController.getCompanyOverview(symbol);
+        if(companyOverviewRecord.isNotValid()){
+            messageBox_AndCleanData("Error for search" + symbol, companyOverviewRecord.getMessage());
             return;
         }
 
+        CompanyOverviewDTO companyOverview = companyOverviewRecord.getEntity();
         coName.setText(String.format("%s (%s : %s)", companyOverview.name,
                 companyOverview.exchange, symbol.toUpperCase()));
         coCountry.setText("Country : " + companyOverview.country);
@@ -173,24 +174,25 @@ public class MainWindow extends JFrame {
     }
 
     private void updateFinancialTab(String symbol) {
-        List<? extends FinancialDTO> financialDTOS;
+        Result<List<? extends FinancialDTO>> financialDTOSResult;
         Vector<String> dates = new Vector<>();
         Field[] fields = null;
 
         int comboSelectedIndex = financialComboBox.getSelectedIndex();
         switch (comboSelectedIndex){
-            case COMBO_BOX_INCOME_STATEMENT_INDEX: {
-                financialDTOS = systemController.getLastIncomeStatements(symbol);
+            case COMBO_BOX_INCOME_STATEMENT_INDEX:
+            {
+                financialDTOSResult = systemController.getLastIncomeStatements(symbol);
                 fields = IncomeStatementDTO.class.getFields();
                 break;
             }
             case COMBO_BOX_BALANCE_SHEET_INDEX: {
-                financialDTOS = systemController.getLastBalanceSheets(symbol);
+                financialDTOSResult = systemController.getLastBalanceSheets(symbol);
                 fields = BalanceSheetDTO.class.getFields();
                 break;
             }
             case COMBO_BOX_CASH_FLOW_INDEX: {
-                financialDTOS = systemController.getLastCashFlows(symbol);
+                financialDTOSResult = systemController.getLastCashFlows(symbol);
                 fields = CashFlowDTO.class.getFields();
                 break;
             }
@@ -198,12 +200,13 @@ public class MainWindow extends JFrame {
                 throw new IllegalStateException("Unexpected value: " + financialComboBox.getSelectedIndex());
         }
 
-        if(financialDTOS == null){
-            messageBox_SymbolDoNotExistsWithCleanData(symbol);
+        if(financialDTOSResult.isNotValid()){
+            messageBox_AndCleanData("Error for search" + symbol, financialDTOSResult.getMessage());
             return;
         }
 
         dates.add("Date");
+        List<? extends FinancialDTO> financialDTOS = financialDTOSResult.getEntity();
         for (FinancialDTO dto: financialDTOS) {
             dates.add(dto.date.toString());
         }
@@ -247,8 +250,7 @@ public class MainWindow extends JFrame {
         return defaultTableModel;
     }
 
-    private void messageBox_SymbolDoNotExistsWithCleanData(@NotNull String symbol){
-        String message = "No such symbol";
+    private void messageBox_AndCleanData(String header, String message){
         searchTextField.setText("");
         previousSearch = "";
 
@@ -258,7 +260,7 @@ public class MainWindow extends JFrame {
         //clean financial table
         ((DefaultTableModel) financialTable.getModel()).setRowCount(0);
 
-        JOptionPane.showMessageDialog(null, message + " " + symbol, message, JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, message, header, JOptionPane.INFORMATION_MESSAGE);
     }
 
     /*** listeners ***/

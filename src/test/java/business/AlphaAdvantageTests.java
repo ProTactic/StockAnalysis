@@ -3,6 +3,7 @@ package business;
 
 import System.AlphavantageAPIHandler;
 import System.Records.*;
+import System.SystemInterface.Result;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,10 +27,12 @@ public class AlphaAdvantageTests {
 
     @Test
     public void companyOverviewAllFieldAreNotNullTest(){
-        CompanyOverviewRecord record = apiHandler.companyOverview(symbol);
+        Result<CompanyOverviewRecord> recordResult = apiHandler.companyOverview(symbol);
+        CompanyOverviewRecord record;
 
-        Assert.assertNotNull(symbol+" is valid symbol therefore the record shouldnt be null", record);
+        Assert.assertTrue(recordResult.getMessage(), recordResult.isValid());
 
+        record = recordResult.getEntity();
         Field[] fields = CompanyOverviewRecord.class.getDeclaredFields();
         for (Field field: fields) {
             try {
@@ -44,10 +47,10 @@ public class AlphaAdvantageTests {
     public void financialStatementsAreNotNullTest(){
 
         Assert.assertNotNull(symbol+"Income statement is null",
-                apiHandler.financialStatement(symbol, IncomeStatementRecord.class));
+                apiHandler.financialStatement(symbol, IncomeStatementRecord.class).getEntity());
         Assert.assertNotNull(symbol+"Balance sheet is null",
-                apiHandler.financialStatement(symbol, BalanceSheetRecord.class));
+                apiHandler.financialStatement(symbol, BalanceSheetRecord.class).getEntity());
         Assert.assertNotNull(symbol+"Cash flow is null",
-                apiHandler.financialStatement(symbol, CashFlowRecord.class));
+                apiHandler.financialStatement(symbol, CashFlowRecord.class).getEntity());
     }
 }
