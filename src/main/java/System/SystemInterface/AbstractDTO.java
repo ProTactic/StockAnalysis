@@ -35,4 +35,19 @@ public abstract class AbstractDTO {
 
         return result.toString();
     }
+
+    public static String varNameToPresentableString(String varName){
+        StringBuilder sb = new StringBuilder();
+        sb.append(Character.toUpperCase(varName.charAt(0)));
+        for(int i=1; i<varName.length(); i++) {
+            char c = varName.charAt(i);
+            if(Character.isUpperCase(c)){
+                sb.append(' ');
+                sb.append(Character.toLowerCase(c));
+                continue;
+            }
+            sb.append(c);
+        }
+        return sb.toString();
+    }
 }

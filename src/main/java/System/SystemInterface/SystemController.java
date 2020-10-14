@@ -5,63 +5,80 @@ import System.Records.BalanceSheetRecord;
 import System.Records.CashFlowRecord;
 import System.Records.CompanyOverviewRecord;
 import System.Records.IncomeStatementRecord;
-import System.StcokSystemManager;
+import System.StockSystemManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SystemController {
+public class SystemController implements ISystemController {
     private static SystemController instance;
-    private StcokSystemManager systemManager;
+    private StockSystemManager systemManager;
 
-    SystemController(StcokSystemManager systemManager) {
+    SystemController(StockSystemManager systemManager) {
             this.systemManager = systemManager;
 
     }
 
     public static SystemController getInstance() throws StockSystemException {
         if(instance == null){
-            StcokSystemManager systemManager = StcokSystemManager.getInstance();
+            StockSystemManager systemManager = StockSystemManager.getInstance();
             instance = new SystemController(systemManager);
         }
         return instance;
     }
 
-    public CompanyOverviewDTO getCompanyOverview(String symbol){
-        CompanyOverviewRecord cor = systemManager.getCompanyOverview(symbol);
-        return buildFromCompanyOverviewRecord(cor);
+    public Result<CompanyOverviewDTO> getCompanyOverview(String symbol){
+        Result<CompanyOverviewRecord> corResult = systemManager.getCompanyOverview(symbol);
+
+        if(!corResult.isValid()){
+            return new Result<CompanyOverviewDTO>(false, null, corResult.getMessage());
+        }
+
+        return new Result<>(true, buildFromCompanyOverviewRecord(corResult.getEntity()));
     }
 
-    public List<IncomeStatementDTO> getLastIncomeStatements(String symbol){
-        List<IncomeStatementRecord> incomeStatements = systemManager.getFinancialStatement(symbol, IncomeStatementRecord.class);
+    public Result<List<? extends FinancialDTO>> getLastIncomeStatements(String symbol){
+        Result<List<IncomeStatementRecord>> incomeStatements = systemManager.getFinancialStatement(symbol, IncomeStatementRecord.class);
         List<IncomeStatementDTO> incomeStatementDTOS = new ArrayList<>();
 
-        for (IncomeStatementRecord incomeStatementRecord : incomeStatements) {
+        if(incomeStatements.isNotValid()){
+            return new Result<>(false, null, incomeStatements.getMessage());
+        }
+
+        for (IncomeStatementRecord incomeStatementRecord : incomeStatements.getEntity()) {
             incomeStatementDTOS.add(buildFromIncomeStatementRecord(symbol, incomeStatementRecord));
         }
 
-        return incomeStatementDTOS;
+        return new Result<>(true, incomeStatementDTOS);
     }
 
-    public List<BalanceSheetDTO> getLastBalanceSheets(String symbol){
-        List<BalanceSheetRecord> balanceSheets = systemManager.getFinancialStatement(symbol, BalanceSheetRecord.class);
+    public Result<List<? extends FinancialDTO>> getLastBalanceSheets(String symbol){
+        Result<List<BalanceSheetRecord>> balanceSheets = systemManager.getFinancialStatement(symbol, BalanceSheetRecord.class);
         List<BalanceSheetDTO> balanceSheetDTOS = new ArrayList<>();
 
-        for (BalanceSheetRecord balanceSheetRecord : balanceSheets) {
+        if(balanceSheets.isNotValid()){
+            return new Result<>(false, null, balanceSheets.getMessage());
+        }
+
+        for (BalanceSheetRecord balanceSheetRecord : balanceSheets.getEntity()) {
             balanceSheetDTOS.add(buildFromBalanceSheetRecord(symbol, balanceSheetRecord));
         }
 
-        return balanceSheetDTOS;
+        return new Result<>(true, balanceSheetDTOS);
     }
 
-    public List<CashFlowDTO> getLastCashFlows(String symbol){
-        List<CashFlowRecord> cashFlowRecords = systemManager.getFinancialStatement(symbol, CashFlowRecord.class);
+    public Result<List<? extends FinancialDTO>> getLastCashFlows(String symbol){
+        Result<List<CashFlowRecord>> cashFlowRecords = systemManager.getFinancialStatement(symbol, CashFlowRecord.class);
         List<CashFlowDTO> cashFlowDTOS = new ArrayList<>();
 
-        for (CashFlowRecord cashFlowRecord : cashFlowRecords) {
+        if(cashFlowRecords.isNotValid()){
+            return new Result<>(false, null, cashFlowRecords.getMessage());
+        }
+
+        for (CashFlowRecord cashFlowRecord : cashFlowRecords.getEntity()) {
             cashFlowDTOS.add(buildFromCashFlowRecord(symbol, cashFlowRecord));
         }
-        return cashFlowDTOS;
+        return new Result<>(true, cashFlowDTOS);
     }
 
     /***********************************/
@@ -70,7 +87,9 @@ public class SystemController {
 
     private static CompanyOverviewDTO buildFromCompanyOverviewRecord(CompanyOverviewRecord cor){
         return new CompanyOverviewDTO(cor.getSymbol(), cor.getName(), cor.getExchange(), cor.getCurrency(),
-                                    cor.getCountry(), cor.getSector());
+                                    cor.getCountry(), cor.getSector(), cor.getMarketCapitalization(),
+                                    cor.getPERatio(), cor.getBookValue(), cor.getPriceToBookRatio(),
+                                    cor.getSharesOutstanding());
     }
 
     private static IncomeStatementDTO buildFromIncomeStatementRecord(String symbol, IncomeStatementRecord incomeStatement){

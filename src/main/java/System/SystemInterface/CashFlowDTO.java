@@ -2,9 +2,7 @@ package System.SystemInterface;
 
 import java.util.Date;
 
-public class CashFlowDTO extends AbstractDTO {
-    public String symbol;
-    public Date date;
+public class CashFlowDTO extends FinancialDTO {
 
     public Long operatingCashFlow;
     public Long investmentCashFlow;
@@ -15,6 +13,7 @@ public class CashFlowDTO extends AbstractDTO {
 
     public CashFlowDTO(String symbol, Date date, Long operatingCashFlow, Long investmentCashFlow,
                        Long financingCashFlow, Long changeInCash, Long capitalExpenditures, Long freeCashFlow) {
+        super();
         this.symbol = symbol;
         this.date = new Date(date.getTime());
         this.operatingCashFlow = operatingCashFlow;
