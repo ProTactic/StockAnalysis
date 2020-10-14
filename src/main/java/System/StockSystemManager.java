@@ -87,6 +87,8 @@ public class StockSystemManager {
             if(recordsResult.isValid()){
                 companyMapper.save(recordsResult.getEntity());
                 return new Result<>(true, recordsResult.getEntity());
+            } else {
+                return recordsResult;
             }
         }
         return new Result<>(true, records);
