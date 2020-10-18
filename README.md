@@ -25,6 +25,15 @@ API key updater:
 
 ![API key](./Documents/APIKey.png)
 
+## Executing the application
+In order to run the jar java must be installed in your system.
+
+Open cmd/terminal and change the path to where the jar
+is located. Then enter:
+```$xslt
+java -jar .\StockAnalysis.jar
+```
+
 ## Libraries and frameworks
 <b>Hibernate</b> for data persistence : https://hibernate.org/ <br/>
 <b>Gson</b> for json parsing : https://github.com/google/gson
